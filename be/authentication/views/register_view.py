@@ -2,8 +2,10 @@
 User registration view.
 """
 from django.contrib.auth.models import User
-from django.http import JsonResponse
 from django.db import IntegrityError
+from rest_framework.response import Response
+from rest_framework import status
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 from .base_view import BaseAuthView
 from ..services import JWTTokenService
@@ -12,18 +14,47 @@ from ..services import JWTTokenService
 class RegisterView(BaseAuthView):
     """User registration API view."""
     
-    def post(self, request) -> JsonResponse:
-        """
-        Register a new user and return JWT tokens.
-        
-        Expected JSON payload:
-        {
-            "email": "user@example.com",
-            "password": "secure_password",
-            "firstName": "John",
-            "lastName": "Doe"
-        }
-        """
+    @extend_schema(
+        summary="Register new user",
+        description="Register a new user account and return JWT tokens",
+        request={
+            'application/json': {
+                'type': 'object',
+                'properties': {
+                    'email': {'type': 'string', 'format': 'email'},
+                    'password': {'type': 'string', 'minLength': 8},
+                    'firstName': {'type': 'string'},
+                    'lastName': {'type': 'string'}
+                },
+                'required': ['email', 'password', 'firstName', 'lastName']
+            }
+        },
+        responses={
+            201: {
+                'application/json': {
+                    'type': 'object',
+                    'properties': {
+                        'access_token': {'type': 'string'},
+                        'refresh_token': {'type': 'string'}
+                    }
+                }
+            }
+        },
+        examples=[
+            OpenApiExample(
+                'Registration Example',
+                request_only=True,
+                value={
+                    'email': 'user@example.com',
+                    'password': 'SecurePass123',
+                    'firstName': 'John',
+                    'lastName': 'Doe'
+                }
+            )
+        ]
+    )
+    def post(self, request) -> Response:
+        """Register a new user and return JWT tokens."""
         data, error = self.parse_json_body(request)
         if error:
             return error
@@ -32,9 +63,9 @@ class RegisterView(BaseAuthView):
         required_fields = ['email', 'password', 'firstName', 'lastName']
         for field in required_fields:
             if field not in data or not data[field]:
-                return JsonResponse(
+                return Response(
                     {'error': f'{field} is required'},
-                    status=400
+                    status=status.HTTP_400_BAD_REQUEST
                 )
         
         email = data['email'].lower().strip()
@@ -44,24 +75,24 @@ class RegisterView(BaseAuthView):
         
         # Validate email format
         if not self.validate_email(email):
-            return JsonResponse(
+            return Response(
                 {'error': 'Invalid email format'},
-                status=400
+                status=status.HTTP_400_BAD_REQUEST
             )
         
         # Validate password strength
         password_error = self.validate_password(password)
         if password_error:
-            return JsonResponse(
+            return Response(
                 {'error': password_error},
-                status=400
+                status=status.HTTP_400_BAD_REQUEST
             )
         
         # Check if user already exists
         if User.objects.filter(username=email).exists():
-            return JsonResponse(
+            return Response(
                 {'error': 'User already exists'},
-                status=409
+                status=status.HTTP_409_CONFLICT
             )
         
         try:
@@ -77,15 +108,15 @@ class RegisterView(BaseAuthView):
             # Generate JWT tokens
             tokens = JWTTokenService.generate_token_pair(user.id)
             
-            return JsonResponse(tokens, status=201)
+            return Response(tokens, status=status.HTTP_201_CREATED)
             
         except IntegrityError:
-            return JsonResponse(
+            return Response(
                 {'error': 'User already exists'},
-                status=409
+                status=status.HTTP_409_CONFLICT
             )
         except Exception as e:
-            return JsonResponse(
+            return Response(
                 {'error': 'Internal server error'},
-                status=500
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

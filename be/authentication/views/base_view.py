@@ -3,17 +3,17 @@ Base view with common functionality for authentication views.
 """
 import json
 import re
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.views import View
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class BaseAuthView(View):
+class BaseAuthView(APIView):
     """Base view for authentication endpoints."""
+    permission_classes = [AllowAny]
     
-    def parse_json_body(self, request) -> tuple[dict, JsonResponse]:
+    def parse_json_body(self, request) -> tuple[dict, Response]:
         """
         Parse JSON body from request.
         
@@ -21,14 +21,9 @@ class BaseAuthView(View):
             Tuple of (parsed_data, error_response)
             If successful, error_response is None
         """
-        try:
-            data = json.loads(request.body)
-            return data, None
-        except json.JSONDecodeError:
-            return None, JsonResponse(
-                {'error': 'Invalid JSON payload'},
-                status=400
-            )
+        # DRF automatically parses JSON, so we just return the data
+        # Invalid JSON will be caught by DRF's parser and return 400 automatically
+        return request.data, None
     
     def validate_email(self, email: str) -> bool:
         """Validate email format."""

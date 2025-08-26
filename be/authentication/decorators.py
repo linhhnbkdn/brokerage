@@ -2,7 +2,8 @@
 JWT authentication decorators.
 """
 from functools import wraps
-from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework import status
 from .services import JWTTokenService
 
 
@@ -22,16 +23,16 @@ def jwt_required(view_func):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         
         if not auth_header:
-            return JsonResponse(
+            return Response(
                 {'error': 'Authorization header required'},
-                status=401
+                status=status.HTTP_401_UNAUTHORIZED
             )
         
         # Check bearer token format
         if not auth_header.startswith('Bearer '):
-            return JsonResponse(
+            return Response(
                 {'error': 'Invalid authorization header format'},
-                status=401
+                status=status.HTTP_401_UNAUTHORIZED
             )
         
         # Extract token
@@ -40,9 +41,9 @@ def jwt_required(view_func):
         # Validate token
         user_id = JWTTokenService.validate_access_token(token)
         if user_id is None:
-            return JsonResponse(
+            return Response(
                 {'error': 'Invalid or expired token'},
-                status=401
+                status=status.HTTP_401_UNAUTHORIZED
             )
         
         # Add user_id to request

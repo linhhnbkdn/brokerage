@@ -2,7 +2,9 @@
 Token refresh view.
 """
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework import status
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 from .base_view import BaseAuthView
 from ..services import JWTTokenService
@@ -11,46 +13,63 @@ from ..services import JWTTokenService
 class RefreshView(BaseAuthView):
     """Token refresh API view."""
     
-    def post(self, request) -> JsonResponse:
-        """
-        Refresh JWT tokens using refresh token.
-        
-        Expected JSON payload:
-        {
-            "refresh_token": "jwt_refresh_token"
+    @extend_schema(
+        summary="Refresh tokens",
+        description="Refresh JWT tokens using refresh token",
+        request={
+            'application/json': {
+                'type': 'object',
+                'properties': {
+                    'refresh_token': {'type': 'string'}
+                },
+                'required': ['refresh_token']
+            }
+        },
+        responses={
+            200: {
+                'application/json': {
+                    'type': 'object',
+                    'properties': {
+                        'access_token': {'type': 'string'},
+                        'refresh_token': {'type': 'string'}
+                    }
+                }
+            }
         }
-        """
+    )
+    def post(self, request) -> Response:
+        """Refresh JWT tokens using refresh token."""
         data, error = self.parse_json_body(request)
         if error:
             return error
         
         refresh_token = data.get('refresh_token')
         if not refresh_token:
-            return JsonResponse(
+            return Response(
                 {'error': 'Refresh token is required'},
-                status=400
+                status=status.HTTP_400_BAD_REQUEST
             )
         
         # Validate refresh token
         user_id = JWTTokenService.validate_refresh_token(refresh_token)
         if user_id is None:
-            return JsonResponse(
+            return Response(
                 {'error': 'Invalid refresh token'},
-                status=401
+                status=status.HTTP_401_UNAUTHORIZED
             )
         
         try:
             # Check if user still exists
             user = User.objects.get(id=user_id)
             if not user.is_active:
-                return JsonResponse(
+                return Response(
                     {'error': 'Account is disabled'},
-                    status=401
+                    status=status.HTTP_401_UNAUTHORIZED
                 )
         except User.DoesNotExist:
-            return JsonResponse(
+            return Response(
                 {'error': 'User not found'},
-                status=401
+                status=status.HTTP_401_UNAUTHORIZED
             )
         
         # Revoke old refresh token
@@ -59,4 +78,4 @@ class RefreshView(BaseAuthView):
         # Generate new token pair
         tokens = JWTTokenService.generate_token_pair(user_id)
         
-        return JsonResponse(tokens, status=200)
+        return Response(tokens, status=status.HTTP_200_OK)

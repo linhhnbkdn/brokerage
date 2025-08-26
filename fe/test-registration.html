@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration</title>
+</head>
+<body>
+    <h1>Test Registration API</h1>
+    <button id="testBtn">Test Registration</button>
+    <div id="result"></div>
+
+    <script type="module">
+        import { register, initializeApiClient } from './app/lib/api-client.js';
+
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+
+            try {
+                initializeApiClient();
+                
+                const result = await register(
+                    'test@example.com',
+                    'TestPass123',
+                    'Test',
+                    'User'
+                );
+                
+                resultDiv.innerHTML = `<pre>Success: ${JSON.stringify(result, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<pre style="color: red;">Error: ${error.message}</pre>`;
+            }
+        });
+    </script>
+</body>
+</html>

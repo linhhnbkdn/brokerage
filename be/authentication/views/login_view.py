@@ -3,7 +3,9 @@ User login view.
 """
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework import status
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 from .base_view import BaseAuthView
 from ..services import JWTTokenService
@@ -12,16 +14,43 @@ from ..services import JWTTokenService
 class LoginView(BaseAuthView):
     """User login API view."""
     
-    def post(self, request) -> JsonResponse:
-        """
-        Authenticate user and return JWT tokens.
-        
-        Expected JSON payload:
-        {
-            "email": "user@example.com",
-            "password": "secure_password"
-        }
-        """
+    @extend_schema(
+        summary="User login",
+        description="Authenticate user and return JWT tokens",
+        request={
+            'application/json': {
+                'type': 'object',
+                'properties': {
+                    'email': {'type': 'string', 'format': 'email'},
+                    'password': {'type': 'string'}
+                },
+                'required': ['email', 'password']
+            }
+        },
+        responses={
+            200: {
+                'application/json': {
+                    'type': 'object',
+                    'properties': {
+                        'access_token': {'type': 'string'},
+                        'refresh_token': {'type': 'string'}
+                    }
+                }
+            }
+        },
+        examples=[
+            OpenApiExample(
+                'Login Example',
+                request_only=True,
+                value={
+                    'email': 'user@example.com',
+                    'password': 'SecurePass123'
+                }
+            )
+        ]
+    )
+    def post(self, request) -> Response:
+        """Authenticate user and return JWT tokens."""
         data, error = self.parse_json_body(request)
         if error:
             return error
@@ -31,18 +60,18 @@ class LoginView(BaseAuthView):
         password = data.get('password', '')
         
         if not email or not password:
-            return JsonResponse(
+            return Response(
                 {'error': 'Email and password are required'},
-                status=400
+                status=status.HTTP_400_BAD_REQUEST
             )
         
         # Check if user exists first
         try:
             user_obj = User.objects.get(username=email)
             if not user_obj.is_active:
-                return JsonResponse(
+                return Response(
                     {'error': 'Account is disabled'},
-                    status=401
+                    status=status.HTTP_401_UNAUTHORIZED
                 )
         except User.DoesNotExist:
             pass
@@ -55,12 +84,12 @@ class LoginView(BaseAuthView):
         )
         
         if user is None:
-            return JsonResponse(
+            return Response(
                 {'error': 'Invalid credentials'},
-                status=401
+                status=status.HTTP_401_UNAUTHORIZED
             )
         
         # Generate JWT tokens
         tokens = JWTTokenService.generate_token_pair(user.id)
         
-        return JsonResponse(tokens, status=200)
+        return Response(tokens, status=status.HTTP_200_OK)

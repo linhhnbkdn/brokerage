@@ -190,6 +190,29 @@ startapp: ## Create new Django app (usage: make startapp APP=appname)
 	$(MANAGE) startapp $(APP)
 	@echo "$(GREEN)App $(APP) created!$(NC)"
 
+##@ API Documentation
+
+.PHONY: gen-openapi
+gen-openapi: ## Generate OpenAPI schema file
+	@echo "$(GREEN)Generating OpenAPI schema...$(NC)"
+	$(MANAGE) spectacular --color --file schema.yml
+	@echo "$(GREEN)OpenAPI schema generated: schema.yml$(NC)"
+
+.PHONY: gen-openapi-json
+gen-openapi-json: ## Generate OpenAPI schema in JSON format
+	@echo "$(GREEN)Generating OpenAPI schema (JSON)...$(NC)"
+	$(MANAGE) spectacular --color --file schema.json --format openapi-json
+	@echo "$(GREEN)OpenAPI schema generated: schema.json$(NC)"
+
+.PHONY: serve-docs
+serve-docs: ## Start development server and open API docs
+	@echo "$(GREEN)Starting server and opening API documentation...$(NC)"
+	@echo "$(YELLOW)API Documentation will be available at:$(NC)"
+	@echo "  - Swagger UI: http://localhost:8000/api/docs/"
+	@echo "  - ReDoc: http://localhost:8000/api/redoc/"
+	@echo "  - Schema: http://localhost:8000/api/schema/"
+	$(MAKE) runserver
+
 .PHONY: check-deploy
 check-deploy: ## Check deployment readiness
 	@echo "$(GREEN)Checking deployment readiness...$(NC)"

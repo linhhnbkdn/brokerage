@@ -1,0 +1,29 @@
+# OpenAPI Generator configuration for TypeScript client
+generatorName: typescript-fetch
+inputSpec: ./schema.yml
+outputDir: ./app/lib/api-client
+globalProperties: {}
+additionalProperties:
+  # Core options
+  typescriptThreePlus: "true"
+  supportsES6: "true"
+  enumPropertyNaming: "UPPERCASE"
+  modelPropertyNaming: "camelCase"
+  paramNaming: "camelCase"
+  
+  # Package info
+  npmName: "@brokerage/api-client"
+  npmVersion: "1.0.0"
+  
+  # Import settings
+  withoutPrefixEnums: "true"
+  withSeparateModelsAndApi: "true"
+  apiPackage: "api"
+  modelPackage: "models"
+  
+  # Type generation
+  stringEnums: "true"
+  useSingleRequestParameter: "false"
+  
+  # File organization
+  withInterfaces: "true"
