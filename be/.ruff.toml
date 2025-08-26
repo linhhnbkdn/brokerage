@@ -1,0 +1,106 @@
+# Additional ruff configuration
+# This file provides extra configuration that complements pyproject.toml
+
+[format]
+# Force single quotes for consistency
+quote-style = "double"
+
+# Use 4 spaces for indentation
+indent-style = "space"
+
+# Preserve trailing commas
+skip-magic-trailing-comma = false
+
+# Auto-detect line endings
+line-ending = "auto"
+
+# Format code in docstrings
+docstring-code-format = true
+
+# Use dynamic line length for docstring code
+docstring-code-line-length = "dynamic"
+
+[lint.flake8-quotes]
+inline-quotes = "double"
+multiline-quotes = "double"
+
+[lint.flake8-import-conventions.aliases]
+# Common import aliases
+numpy = "np"
+pandas = "pd"
+matplotlib = "plt"
+seaborn = "sns"
+tensorflow = "tf"
+torch = "torch"
+
+[lint.flake8-bugbear]
+# Allow default arguments like [], {} in function definitions
+extend-immutable-calls = [
+    "django.conf.settings.configure",
+    "django.contrib.admin.register",
+    "django.urls.include",
+    "django.urls.path",
+    "django.urls.re_path",
+    "fastapi.Depends",
+    "fastapi.Query",
+    "fastapi.Path",
+    "fastapi.Body",
+    "fastapi.Header",
+    "fastapi.Cookie",
+    "fastapi.Form",
+    "fastapi.File",
+    "fastapi.UploadFile",
+]
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[lint.flake8-type-checking]
+strict = true
+
+[lint.pylint]
+max-args = 8
+max-branches = 15
+max-returns = 8
+max-statements = 60
+
+[lint.mccabe]
+# McCabe complexity
+max-complexity = 10
+
+[lint.per-file-ignores]
+# Additional per-file ignores for specific Django patterns
+"**/admin.py" = ["RUF012"]  # Allow mutable class attributes in admin
+"**/apps.py" = ["DJ008"]    # Allow __str__ on model in apps.py
+"**/forms.py" = ["DJ007"]   # Allow __str__ on form fields
+"**/serializers.py" = ["DJ007"]  # Allow __str__ on serializer fields
+"**/views.py" = [
+    "BLE001",  # Allow blind except in views for error handling
+    "PLR0913", # Allow many arguments in view methods
+]
+"**/models.py" = [
+    "DJ008",   # Allow __str__ method on model
+    "RUF012",  # Allow mutable class attributes (Django fields)
+    "A003",    # Allow builtin attribute shadowing (id, type, etc.)
+]
+
+[lint.flake8-django]
+# Django-specific settings
+validate-model-field-names = true
+validate-model-method-names = true
+
+[lint.flake8-pytest-style]
+# Pytest style preferences
+fixture-parentheses = false
+parametrize-names-type = "tuple"
+parametrize-values-type = "tuple"
+parametrize-values-row-type = "tuple"
+
+[lint.isort]
+# Additional isort configuration
+force-single-line = false
+force-sort-within-sections = true
+order-by-type = true
+case-sensitive = true
+combine-as-imports = true
+split-on-trailing-comma = true

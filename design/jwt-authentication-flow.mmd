@@ -1,205 +1,92 @@
 sequenceDiagram
-    participant FE as React Frontend
-    participant API as Django API Gateway
-    participant Auth as Authentication Service
-    participant JWT as JWT Token Service
-    participant UserRepo as User Repository
-    participant DB as Database
-    participant Cache as Redis Cache
+    participant FE as Frontend
+    participant API as Django API
 
-    Note over FE, Cache: User Registration Flow
-    
+    Note over FE, API: JWT Authentication Flow
+
+    Note over FE, API: 1. User Registration
     FE->>+API: POST /api/auth/register
     Note right of FE: { email, password, firstName, lastName }
-    
-    API->>+Auth: validate_registration_data()
-    Auth->>Auth: validate_email_format()
-    Auth->>Auth: validate_password_strength()
-    
-    Auth->>+UserRepo: check_user_exists(email)
-    UserRepo->>+DB: SELECT user WHERE email = ?
-    DB-->>-UserRepo: user_exists: boolean
-    UserRepo-->>-Auth: user_exists: boolean
-    
-    alt User already exists
-        Auth-->>API: ValidationError("User already exists")
-        API-->>FE: 409 Conflict
-        Note right of FE: Show "Email already registered"
-    else Valid registration data
-        Auth->>+UserRepo: create_user(user_data)
-        UserRepo->>UserRepo: hash_password(password)
-        UserRepo->>+DB: INSERT INTO users
-        DB-->>-UserRepo: user_id
-        UserRepo-->>-Auth: user_entity
-        
-        Auth->>+JWT: generate_token_pair(user_id)
-        JWT->>JWT: create_access_token(user_id, exp: 15min)
-        JWT->>JWT: create_refresh_token(user_id, exp: 7days)
-        JWT->>+Cache: store_refresh_token(token_id, user_id)
-        Cache-->>-JWT: stored
-        JWT-->>-Auth: { access_token, refresh_token }
-        
-        Auth-->>-API: { user, tokens }
-        API-->>-FE: 201 Created
-        Note right of FE: { user, access_token, refresh_token }
-        
-        FE->>FE: store_tokens_securely()
-        FE->>FE: redirect_to_dashboard()
-    end
 
-    Note over FE, Cache: User Login Flow
-    
+    API->>API: validate_user_data()
+    API->>API: create_user()
+    API->>API: generate_jwt_tokens(user_id)
+    Note right of API: Create access_token (15min)<br/>Create refresh_token (7days)<br/>Store refresh_token in cache
+
+    API-->>-FE: 201 Created
+    Note left of API: { access_token, refresh_token }
+
+    FE->>FE: store_tokens_securely()
+
+    Note over FE, API: 2. User Login
     FE->>+API: POST /api/auth/login
     Note right of FE: { email, password }
-    
-    API->>+Auth: authenticate_user(email, password)
-    Auth->>+UserRepo: get_user_by_email(email)
-    UserRepo->>+DB: SELECT user WHERE email = ?
-    DB-->>-UserRepo: user_data or null
-    UserRepo-->>-Auth: user_entity or null
-    
-    alt User not found
-        Auth-->>API: AuthenticationError("Invalid credentials")
-        API-->>FE: 401 Unauthorized
-        Note right of FE: Show "Invalid email or password"
-    else User found
-        Auth->>Auth: verify_password(password, user.hashed_password)
-        
-        alt Invalid password
-            Auth-->>API: AuthenticationError("Invalid credentials")
-            API-->>FE: 401 Unauthorized
-            Note right of FE: Show "Invalid email or password"
-        else Valid credentials
-            Auth->>+JWT: generate_token_pair(user.id)
-            JWT->>JWT: create_access_token(user.id, exp: 15min)
-            JWT->>JWT: create_refresh_token(user.id, exp: 7days)
-            JWT->>+Cache: store_refresh_token(token_id, user.id)
-            Cache-->>-JWT: stored
-            JWT-->>-Auth: { access_token, refresh_token }
-            
-            Auth-->>-API: { user, tokens }
-            API-->>-FE: 200 OK
-            Note right of FE: { user, access_token, refresh_token }
-            
-            FE->>FE: store_tokens_securely()
-            FE->>FE: redirect_to_dashboard()
-        end
-    end
 
-    Note over FE, Cache: Authenticated API Request Flow
-    
+    API->>API: authenticate_user()
+    API->>API: generate_jwt_tokens(user_id)
+    Note right of API: Verify credentials<br/>Create fresh JWT tokens<br/>Cache refresh_token
+
+    API-->>-FE: 200 OK
+    Note left of API: { access_token, refresh_token }
+
+    FE->>FE: store_tokens_securely()
+
+    Note over FE, API: 3. Authenticated API Request
     FE->>+API: GET /api/brokerage/portfolio
     Note right of FE: Authorization: Bearer <access_token>
-    
-    API->>+JWT: validate_access_token(token)
-    JWT->>JWT: decode_token(token)
-    
-    alt Token expired
-        JWT-->>API: TokenExpiredError
-        API-->>FE: 401 Unauthorized
-        Note right of FE: { error: "token_expired" }
-        
-        Note over FE, Cache: Token Refresh Flow
-        FE->>+API: POST /api/auth/refresh
-        Note right of FE: { refresh_token }
-        
-        API->>+JWT: validate_refresh_token(refresh_token)
-        JWT->>JWT: decode_token(refresh_token)
-        
-        alt Refresh token invalid/expired
-            JWT-->>API: InvalidTokenError
-            API-->>FE: 401 Unauthorized
-            Note right of FE: Redirect to login
-        else Valid refresh token
-            JWT->>+Cache: check_refresh_token(token_id)
-            Cache-->>-JWT: token_exists: boolean
-            
-            alt Token not in cache (revoked)
-                JWT-->>API: InvalidTokenError
-                API-->>FE: 401 Unauthorized
-                Note right of FE: Redirect to login
-            else Valid refresh token
-                JWT->>+UserRepo: get_user_by_id(user_id)
-                UserRepo->>+DB: SELECT user WHERE id = ?
-                DB-->>-UserRepo: user_data
-                UserRepo-->>-JWT: user_entity
-                
-                JWT->>JWT: create_access_token(user_id, exp: 15min)
-                JWT->>JWT: create_refresh_token(user_id, exp: 7days)
-                JWT->>+Cache: invalidate_old_refresh_token(old_token_id)
-                Cache-->>-JWT: invalidated
-                JWT->>+Cache: store_refresh_token(new_token_id, user_id)
-                Cache-->>-JWT: stored
-                JWT-->>-API: { access_token, refresh_token }
-                
-                API-->>-FE: 200 OK
-                Note right of FE: { access_token, refresh_token }
-                
-                FE->>FE: store_tokens_securely()
-                FE->>+API: GET /api/brokerage/portfolio (retry)
-                Note right of FE: Authorization: Bearer <new_access_token>
-            end
-        end
-    else Token invalid/malformed
-        JWT-->>API: InvalidTokenError
-        API-->>FE: 401 Unauthorized
-        Note right of FE: Redirect to login
-    else Valid token
-        JWT->>JWT: extract_user_id(token)
-        JWT-->>-API: user_id
-        
-        API->>+UserRepo: get_user_by_id(user_id)
-        UserRepo->>+DB: SELECT user WHERE id = ?
-        DB-->>-UserRepo: user_data
-        UserRepo-->>-API: user_entity
-        
-        API->>API: process_portfolio_request(user)
-        API->>+DB: SELECT portfolio WHERE user_id = ?
-        DB-->>-API: portfolio_data
-        API-->>-FE: 200 OK
-        Note right of FE: { portfolio_data }
-    end
 
-    Note over FE, Cache: User Logout Flow
-    
+    API->>API: validate_access_token()
+    Note right of API: Verify JWT signature<br/>Check expiration<br/>Extract user_id
+
+    alt Valid Token
+        API->>API: process_request(user_id)
+        API-->>FE: 200 OK
+        Note left of API: { portfolio_data }
+    else Token Expired
+        API-->>FE: 401 Unauthorized
+        Note left of API: { error: "token_expired" }
+    end
+    deactivate API
+
+    Note over FE, API: Token Refresh Flow
+    FE->>+API: POST /api/auth/refresh
+    Note right of FE: { refresh_token }
+
+    API->>API: validate_refresh_token()
+    Note right of API: Verify refresh_token<br/>Check not revoked<br/>Extract user_id
+
+    alt Valid Refresh Token
+        API->>API: generate_new_jwt_tokens(user_id)
+        Note right of API: Create new access_token<br/>Create new refresh_token<br/>Revoke old refresh_token
+
+        API-->>FE: 200 OK
+        Note left of API: { access_token, refresh_token }
+
+        FE->>FE: store_new_tokens()
+        FE->>API: Retry Original Request
+        Note right of FE: Authorization: Bearer <new_access_token>
+        API-->>FE: 200 OK
+    else Invalid Refresh Token
+        API-->>FE: 401 Unauthorized
+        FE->>FE: redirect_to_login()
+    end
+    deactivate API
+
+    Note over FE, API: 4. User Logout
     FE->>+API: POST /api/auth/logout
     Note right of FE: { refresh_token }
-    
-    API->>+JWT: revoke_refresh_token(refresh_token)
-    JWT->>JWT: decode_token(refresh_token)
-    JWT->>+Cache: invalidate_refresh_token(token_id)
-    Cache-->>-JWT: invalidated
-    JWT-->>-API: success
-    
+
+    API->>API: revoke_refresh_token()
+    Note right of API: Remove from cache<br/>Invalidate refresh_token
+
     API-->>-FE: 200 OK
     FE->>FE: clear_stored_tokens()
-    FE->>FE: redirect_to_login()
 
-    Note over FE, Cache: Error Handling Scenarios
-    
-    rect rgb(255, 240, 240)
-        Note over FE, Cache: Network Error Scenario
-        FE->>API: Any API Request
-        API-->>FE: Network Error (500/503)
-        FE->>FE: show_error_message("Service temporarily unavailable")
-        FE->>FE: retry_with_exponential_backoff()
+    Note over FE, API: JWT Token Details
+    rect rgb(240, 248, 255)
+        Note over API: Access Token (15 minutes)<br/>Header: { "alg": "HS256", "typ": "JWT" }<br/>Payload: { "user_id": 123, "exp": timestamp }<br/>Used for API authentication
     end
-    
-    rect rgb(255, 245, 240)
-        Note over FE, Cache: Database Connection Error
-        API->>DB: Any Database Query
-        DB-->>API: Connection Error
-        API->>API: log_error(error)
-        API-->>FE: 503 Service Unavailable
-        FE->>FE: show_error_message("Please try again later")
-    end
-    
-    rect rgb(240, 240, 255)
-        Note over FE, Cache: Rate Limiting Scenario
-        FE->>API: Multiple rapid requests
-        API->>API: check_rate_limit(user_id)
-        API-->>FE: 429 Too Many Requests
-        Note right of FE: { retry_after: 60 }
-        FE->>FE: show_rate_limit_message()
-        FE->>FE: disable_actions_temporarily()
+
+    rect rgb(248, 255, 240)
+        Note over API: Refresh Token (7 days)<br/>Header: { "alg": "HS256", "typ": "JWT" }<br/>Payload: { "user_id": 123, "jti": "uuid", "exp": timestamp }<br/>Used for token renewal
     end
