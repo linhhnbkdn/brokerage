@@ -87,6 +87,9 @@ export default function Dashboard() {
                 <a href="/dashboard" className="text-blue-600 dark:text-blue-400 font-medium">
                   Dashboard
                 </a>
+                <a href="/banking" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  Banking
+                </a>
                 <a href="#" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   Trading
                 </a>
@@ -169,6 +172,53 @@ export default function Dashboard() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Banking Summary */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Banking Overview</h2>
+            <a href="/banking" className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-medium">
+              View All →
+            </a>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="trading-card">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Linked Accounts</span>
+                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">2</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">1 verified, 1 pending</div>
+            </div>
+            
+            <div className="trading-card">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Pending Transfers</span>
+                <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">$2,500.00</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">Est. completion: 1-3 days</div>
+            </div>
+            
+            <div className="trading-card">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Quick Banking</span>
+              </div>
+              <div className="flex gap-2">
+                <a href="/banking?tab=deposit" className="btn-success text-sm px-3 py-1 flex-1 text-center">
+                  Deposit
+                </a>
+                <a href="/banking?tab=withdraw" className="btn-primary text-sm px-3 py-1 flex-1 text-center">
+                  Withdraw
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Portfolio Overview */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Portfolio Overview</h2>

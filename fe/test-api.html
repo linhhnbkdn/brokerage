@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <button id="testLogin">Test Login API Call</button>
+    <button id="testRegister">Test Register API Call</button>
+    <div id="result" style="margin-top: 20px; padding: 10px; background: #f0f0f0;"></div>
+
+    <script>
+        async function testLogin() {
+            console.log('🔄 Testing login API call...');
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin,
+                    },
+                    body: JSON.stringify({
+                        email: 'demo@example.com',
+                        password: 'DemoPass123'
+                    }),
+                });
+
+                console.log('📡 Login response status:', response.status);
+                console.log('📡 Login response headers:', Object.fromEntries(response.headers.entries()));
+                
+                const data = await response.json();
+                console.log('✅ Login response data:', data);
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>Login Test Result:</h3>
+                    <p>Status: ${response.status}</p>
+                    <p>Data: <pre>${JSON.stringify(data, null, 2)}</pre></p>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>Login Test Error:</h3>
+                    <p style="color: red;">${error.message}</p>
+                `;
+            }
+        }
+
+        async function testRegister() {
+            console.log('🔄 Testing register API call...');
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin,
+                    },
+                    body: JSON.stringify({
+                        email: 'test-' + Date.now() + '@example.com',
+                        password: 'TestPass123',
+                        firstName: 'Test',
+                        lastName: 'User'
+                    }),
+                });
+
+                console.log('📡 Register response status:', response.status);
+                console.log('📡 Register response headers:', Object.fromEntries(response.headers.entries()));
+                
+                const data = await response.json();
+                console.log('✅ Register response data:', data);
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>Register Test Result:</h3>
+                    <p>Status: ${response.status}</p>
+                    <p>Data: <pre>${JSON.stringify(data, null, 2)}</pre></p>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Register error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>Register Test Error:</h3>
+                    <p style="color: red;">${error.message}</p>
+                `;
+            }
+        }
+
+        document.getElementById('testLogin').addEventListener('click', testLogin);
+        document.getElementById('testRegister').addEventListener('click', testRegister);
+    </script>
+</body>
+</html>

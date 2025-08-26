@@ -14,11 +14,11 @@ export interface User {
 }
 
 // API Base URL
-export const API_BASE_URL = 'http://localhost:8001/api';
+export const API_BASE_URL = "http://localhost:8000/api";
 
 // Token storage keys
-const ACCESS_TOKEN_KEY = 'access_token';
-const REFRESH_TOKEN_KEY = 'refresh_token';
+const ACCESS_TOKEN_KEY = "access_token";
+const REFRESH_TOKEN_KEY = "refresh_token";
 
 /**
  * Store authentication tokens in localStorage
@@ -32,7 +32,7 @@ export function storeTokens(tokens: AuthTokens): void {
  * Get stored access token
  */
 export function getAccessToken(): string | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
@@ -40,7 +40,7 @@ export function getAccessToken(): string | null {
  * Get stored refresh token
  */
 export function getRefreshToken(): string | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   return localStorage.getItem(REFRESH_TOKEN_KEY);
 }
 
@@ -48,7 +48,7 @@ export function getRefreshToken(): string | null {
  * Clear all stored tokens
  */
 export function clearTokens(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
@@ -59,10 +59,10 @@ export function clearTokens(): void {
 export function isAuthenticated(): boolean {
   const token = getAccessToken();
   if (!token) return false;
-  
+
   try {
     // Simple token expiry check (decode JWT payload)
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     const now = Date.now() / 1000;
     return payload.exp > now;
   } catch {
@@ -79,15 +79,15 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const token = getAccessToken();
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...options.headers,
   };
 
   // Add authorization header if token exists
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
   const response = await fetch(url, {
@@ -100,7 +100,7 @@ export async function apiRequest<T>(
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       // Retry the request with new token
-      headers['Authorization'] = `Bearer ${getAccessToken()}`;
+      headers["Authorization"] = `Bearer ${getAccessToken()}`;
       const retryResponse = await fetch(url, {
         ...options,
         headers,
@@ -109,8 +109,8 @@ export async function apiRequest<T>(
     } else {
       // Refresh failed, redirect to login
       clearTokens();
-      window.location.href = '/login';
-      throw new Error('Authentication failed');
+      window.location.href = "/login";
+      throw new Error("Authentication failed");
     }
   }
 
@@ -122,11 +122,11 @@ export async function apiRequest<T>(
  */
 async function handleApiResponse<T>(response: Response): Promise<T> {
   const data = await response.json();
-  
+
   if (!response.ok) {
-    throw new Error(data.error || data.detail || 'API request failed');
+    throw new Error(data.error || data.detail || "API request failed");
   }
-  
+
   return data;
 }
 
@@ -139,9 +139,9 @@ export async function refreshAccessToken(): Promise<boolean> {
 
   try {
     const response = await fetch(`${API_BASE_URL}/auth/refresh/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         refresh_token: refreshToken,
@@ -154,7 +154,7 @@ export async function refreshAccessToken(): Promise<boolean> {
       return true;
     }
   } catch (error) {
-    console.error('Token refresh failed:', error);
+    console.error("Token refresh failed:", error);
   }
 
   return false;
@@ -163,18 +163,21 @@ export async function refreshAccessToken(): Promise<boolean> {
 /**
  * Login user with email and password
  */
-export async function login(email: string, password: string): Promise<AuthTokens> {
+export async function login(
+  email: string,
+  password: string
+): Promise<AuthTokens> {
   const response = await fetch(`${API_BASE_URL}/auth/login/`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Login failed');
+    throw new Error(error.error || "Login failed");
   }
 
   const tokens: AuthTokens = await response.json();
@@ -192,9 +195,9 @@ export async function register(
   lastName: string
 ): Promise<AuthTokens> {
   const response = await fetch(`${API_BASE_URL}/auth/register/`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       email: email.toLowerCase().trim(),
@@ -206,7 +209,7 @@ export async function register(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Registration failed');
+    throw new Error(error.error || "Registration failed");
   }
 
   const tokens: AuthTokens = await response.json();
@@ -219,23 +222,23 @@ export async function register(
  */
 export async function logout(): Promise<void> {
   const refreshToken = getRefreshToken();
-  
+
   if (refreshToken) {
     try {
       await fetch(`${API_BASE_URL}/auth/logout/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           refresh_token: refreshToken,
         }),
       });
     } catch (error) {
-      console.error('Logout API call failed:', error);
+      console.error("Logout API call failed:", error);
     }
   }
-  
+
   clearTokens();
 }
 
@@ -243,5 +246,5 @@ export async function logout(): Promise<void> {
  * Get current user information (requires authentication)
  */
 export async function getCurrentUser(): Promise<User> {
-  return apiRequest<User>('/auth/protected/');
+  return apiRequest<User>("/auth/protected/");
 }
