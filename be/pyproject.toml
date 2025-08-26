@@ -9,18 +9,21 @@ description = "Django REST API backend for brokerage application"
 authors = [
     {name = "Your Name", email = "your.email@example.com"},
 ]
+readme = "README.md"
+requires-python = ">=3.11"
 dependencies = [
-    "django>=4.2,<5.0",
+    "django>=5.2,<6.0",
     "djangorestframework>=3.14.0",
     "django-cors-headers>=4.0.0",
     "python-dotenv>=1.0.0",
     "psycopg2-binary>=2.9.0",
     "celery>=5.3.0",
     "redis>=4.5.0",
-    "python-jose[cryptography]>=3.3.0",
+    "PyJWT>=2.8.0",
     "passlib[bcrypt]>=1.7.4",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
+    "drf-spectacular>=0.28.0",
 ]
 
 [project.optional-dependencies]
@@ -182,6 +185,9 @@ section-order = [
     "F403",   # `from .base import *` used; unable to detect undefined names
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
 # Pytest configuration
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "be.settings"
@@ -220,7 +226,7 @@ django_settings_module = "be.settings"
 
 # Coverage configuration
 [tool.coverage.run]
-source = "."
+source = ["."]
 branch = true
 omit = [
     "*/migrations/*",
