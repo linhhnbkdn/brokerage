@@ -1,6 +1,7 @@
 """
 Protected endpoint example.
 """
+
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -16,18 +17,18 @@ from ..decorators import jwt_required
     description="Example protected endpoint requiring JWT authentication",
     responses={
         200: {
-            'application/json': {
-                'type': 'object',
-                'properties': {
-                    'message': {'type': 'string'},
-                    'user_id': {'type': 'integer'},
-                    'username': {'type': 'string'}
-                }
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"},
+                    "user_id": {"type": "integer"},
+                    "username": {"type": "string"},
+                },
             }
         }
-    }
+    },
 )
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([AllowAny])
 @jwt_required
 def protected_endpoint(request) -> Response:
@@ -35,13 +36,13 @@ def protected_endpoint(request) -> Response:
     user_id = request.user_id
     try:
         user = User.objects.get(id=user_id)
-        return Response({
-            'message': 'Access granted',
-            'user_id': user_id,
-            'username': user.username
-        }, status=status.HTTP_200_OK)
-    except User.DoesNotExist:
         return Response(
-            {'error': 'User not found'},
-            status=status.HTTP_404_NOT_FOUND
+            {
+                "message": "Access granted",
+                "user_id": user_id,
+                "username": user.username,
+            },
+            status=status.HTTP_200_OK,
         )
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)

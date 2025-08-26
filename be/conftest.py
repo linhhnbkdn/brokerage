@@ -6,8 +6,6 @@ This file sets up common test fixtures and configurations.
 import os
 import django
 from django.conf import settings
-from django.core.management import execute_from_command_line
-from django.test.utils import get_runner
 import pytest
 
 
@@ -33,6 +31,7 @@ def django_db_setup():
 def api_client():
     """Provide Django REST framework API client."""
     from rest_framework.test import APIClient
+
     return APIClient()
 
 
@@ -40,9 +39,7 @@ def api_client():
 def authenticated_user(django_user_model):
     """Create an authenticated user for testing."""
     user = django_user_model.objects.create_user(
-        username="testuser",
-        email="test@example.com",
-        password="testpass123"
+        username="testuser", email="test@example.com", password="testpass123"
     )
     return user
 
@@ -58,9 +55,7 @@ def authenticated_client(api_client, authenticated_user):
 def admin_user(django_user_model):
     """Create an admin user for testing."""
     user = django_user_model.objects.create_superuser(
-        username="admin",
-        email="admin@example.com",
-        password="adminpass123"
+        username="admin", email="admin@example.com", password="adminpass123"
     )
     return user
 
@@ -96,7 +91,7 @@ def sample_data():
             "test_field": "test_value",
             "numeric_field": 42,
             "boolean_field": True,
-        }
+        },
     }
 
 
@@ -104,7 +99,7 @@ def sample_data():
 def mock_settings():
     """Provide mock Django settings for testing."""
     from django.test import override_settings
-    
+
     return override_settings(
         EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
         CELERY_TASK_ALWAYS_EAGER=True,

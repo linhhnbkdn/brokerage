@@ -1,3 +1,4 @@
-from django.db import models
+# Import all models from the models package
+from .models import BankAccount, Transaction, UserBalance
 
-# Create your models here.
+__all__ = ["BankAccount", "Transaction", "UserBalance"]

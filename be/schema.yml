@@ -193,6 +193,84 @@ paths:
                     refresh_token:
                       type: string
           description: ''
+  /api/banking/accounts/:
+    get:
+      operationId: banking_accounts_retrieve
+      description: Get all bank accounts for the authenticated user
+      tags:
+      - banking
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/banking/deposit/:
+    post:
+      operationId: banking_deposit_create
+      description: Initiate a deposit transaction
+      tags:
+      - banking
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/banking/link-account/:
+    post:
+      operationId: banking_link_account_create
+      description: Link a new bank account to the user
+      tags:
+      - banking
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/banking/transactions/:
+    get:
+      operationId: banking_transactions_retrieve
+      description: Get user's transaction history
+      tags:
+      - banking
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/banking/verify-account/:
+    post:
+      operationId: banking_verify_account_create
+      description: Verify bank account using micro-deposit amounts
+      tags:
+      - banking
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/banking/withdraw/:
+    post:
+      operationId: banking_withdraw_create
+      description: Initiate a withdrawal transaction
+      tags:
+      - banking
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
 components:
   securitySchemes:
     basicAuth:

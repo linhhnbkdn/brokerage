@@ -84,10 +84,7 @@ max-complexity = 10
     "A003",    # Allow builtin attribute shadowing (id, type, etc.)
 ]
 
-[lint.flake8-django]
-# Django-specific settings
-validate-model-field-names = true
-validate-model-method-names = true
+# Django-specific linting is handled by the DJ rules in pyproject.toml
 
 [lint.flake8-pytest-style]
 # Pytest style preferences
