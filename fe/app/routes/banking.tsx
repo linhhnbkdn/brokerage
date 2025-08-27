@@ -1,7 +1,7 @@
 import type { Route } from "./+types/banking";
 import { useAuth } from "../hooks/useAuth";
 import { useState, useEffect, useRef } from "react";
-import { linkBankAccount, initiateDeposit, initiateWithdrawal, verifyBankAccount } from "../lib/api-client";
+import { linkBankAccount, initiateDeposit, initiateWithdrawal, verifyBankAccount, getBankAccounts, getTransactionHistory, getAccessToken, getRefreshToken } from "../lib/api-client";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,50 +10,24 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// Mock data for demonstration
-const linkedAccounts = [
-  {
-    account_link_id: "acc_1",
-    last_four_digits: "1234",
-    bank_name: "Chase Bank",
-    status: "verified",
-    account_type: "checking",
-  },
-  {
-    account_link_id: "acc_2", 
-    last_four_digits: "5678",
-    bank_name: "Bank of America",
-    status: "pending_verification",
-    account_type: "savings",
-  }
-];
+// Define types for data from API
+interface BankAccount {
+  account_link_id: string;
+  last_four_digits: string;
+  bank_name: string;
+  status: string;
+  account_type: string;
+  account_holder_name: string;
+}
 
-const transactions = [
-  {
-    transaction_id: "txn_1",
-    type: "deposit",
-    amount: 1000.00,
-    status: "completed",
-    created_at: "2024-01-10T10:30:00Z",
-    completed_at: "2024-01-12T14:22:00Z",
-  },
-  {
-    transaction_id: "txn_2",
-    type: "withdraw", 
-    amount: 500.00,
-    status: "processing",
-    created_at: "2024-01-15T09:15:00Z",
-    completed_at: null,
-  },
-  {
-    transaction_id: "txn_3",
-    type: "deposit",
-    amount: 2500.00,
-    status: "pending",
-    created_at: "2024-01-16T16:45:00Z",
-    completed_at: null,
-  },
-];
+interface Transaction {
+  transaction_id: string;
+  type: string;
+  amount: number;
+  status: string;
+  created_at: string;
+  completed_at: string | null;
+}
 
 export default function Banking() {
   const { isLoggedIn, isLoading, userInfo, logout } = useAuth();
@@ -64,6 +38,44 @@ export default function Banking() {
   const [selectedAccountForVerification, setSelectedAccountForVerification] = useState<string | null>(null);
   const [linkAccountStep, setLinkAccountStep] = useState<'form' | 'processing' | 'verification'>('form');
   const userMenuRef = useRef<HTMLDivElement>(null);
+  
+  // API data state
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  
+  // Token status state
+  const [tokenStatus, setTokenStatus] = useState<{
+    hasTokens: boolean;
+    accessTokenExpiry?: number;
+    timeUntilExpiry?: number;
+  }>({ hasTokens: false });
+
+  // Update token status
+  const updateTokenStatus = () => {
+    const accessToken = getAccessToken();
+    const refreshToken = getRefreshToken();
+    
+    if (accessToken && refreshToken) {
+      try {
+        const payload = JSON.parse(atob(accessToken.split(".")[1]));
+        const now = Date.now() / 1000;
+        const timeUntilExpiry = payload.exp - now;
+        
+        setTokenStatus({
+          hasTokens: true,
+          accessTokenExpiry: payload.exp,
+          timeUntilExpiry
+        });
+      } catch {
+        setTokenStatus({ hasTokens: false });
+      }
+    } else {
+      setTokenStatus({ hasTokens: false });
+    }
+  };
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -77,12 +89,63 @@ export default function Banking() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Update token status periodically
+  useEffect(() => {
+    updateTokenStatus();
+    const interval = setInterval(updateTokenStatus, 1000); // Update every second
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fetch bank accounts
+  const fetchBankAccounts = async () => {
+    if (!isLoggedIn) return;
+    
+    setIsLoadingAccounts(true);
+    setApiError(null);
+    try {
+      const response = await getBankAccounts();
+      setBankAccounts(response.accounts || []);
+    } catch (error) {
+      console.error('Error fetching bank accounts:', error);
+      setApiError('Failed to load bank accounts');
+      setBankAccounts([]);
+    } finally {
+      setIsLoadingAccounts(false);
+    }
+  };
+
+  // Fetch transaction history
+  const fetchTransactions = async () => {
+    if (!isLoggedIn) return;
+    
+    setIsLoadingTransactions(true);
+    setApiError(null);
+    try {
+      const response = await getTransactionHistory();
+      setTransactions(response.transactions || []);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      setApiError('Failed to load transactions');
+      setTransactions([]);
+    } finally {
+      setIsLoadingTransactions(false);
+    }
+  };
+
   // Authentication redirect
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
       window.location.href = '/login';
     }
   }, [isLoading, isLoggedIn]);
+
+  // Load data when component mounts and user is authenticated
+  useEffect(() => {
+    if (isLoggedIn && !isLoading) {
+      fetchBankAccounts();
+      fetchTransactions();
+    }
+  }, [isLoggedIn, isLoading]);
 
   if (isLoading) {
     return (
@@ -178,12 +241,40 @@ export default function Banking() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Banking & Transfers
-          </h1>
-          <p className="text-slate-600 dark:text-slate-300">
-            Link your bank accounts, deposit funds, and manage transfers
-          </p>
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                Banking & Transfers
+              </h1>
+              <p className="text-slate-600 dark:text-slate-300">
+                Link your bank accounts, deposit funds, and manage transfers
+              </p>
+            </div>
+            
+            {/* Token Status Display */}
+            {tokenStatus.hasTokens && (
+              <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Token Status</div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    tokenStatus.timeUntilExpiry && tokenStatus.timeUntilExpiry > 120 
+                      ? 'bg-green-500' 
+                      : tokenStatus.timeUntilExpiry && tokenStatus.timeUntilExpiry > 60
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
+                  }`} />
+                  <span className="text-sm font-mono text-slate-700 dark:text-slate-300">
+                    {tokenStatus.timeUntilExpiry && tokenStatus.timeUntilExpiry > 0
+                      ? `${Math.floor(tokenStatus.timeUntilExpiry / 60)}:${Math.floor(tokenStatus.timeUntilExpiry % 60).toString().padStart(2, '0')}`
+                      : 'Expired'}
+                  </span>
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  {tokenStatus.timeUntilExpiry && tokenStatus.timeUntilExpiry <= 120 ? 'Auto-refresh active' : 'Token valid'}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -229,9 +320,41 @@ export default function Banking() {
                 </button>
               </div>
 
-              <div className="grid gap-4">
-                {linkedAccounts.map(account => (
-                  <div key={account.account_link_id} className="trading-card">
+              {isLoadingAccounts ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <span className="ml-2 text-slate-600 dark:text-slate-300">Loading accounts...</span>
+                </div>
+              ) : apiError ? (
+                <div className="trading-card max-w-md">
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Error Loading Accounts</h3>
+                    <p className="text-slate-600 dark:text-slate-300 mb-4">{apiError}</p>
+                    <button onClick={fetchBankAccounts} className="btn-primary">Retry</button>
+                  </div>
+                </div>
+              ) : bankAccounts.length === 0 ? (
+                <div className="trading-card max-w-md">
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No Bank Accounts</h3>
+                    <p className="text-slate-600 dark:text-slate-300 mb-4">You haven't linked any bank accounts yet.</p>
+                    <button onClick={() => setShowLinkAccount(true)} className="btn-primary">Link Your First Account</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {bankAccounts.map(account => (
+                    <div key={account.account_link_id} className="trading-card">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
@@ -272,8 +395,9 @@ export default function Banking() {
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -284,7 +408,7 @@ export default function Banking() {
                 Deposit Funds
               </h2>
               
-              {linkedAccounts.filter(acc => acc.status === 'verified').length === 0 ? (
+              {bankAccounts.filter(acc => acc.status === 'verified').length === 0 ? (
                 <div className="trading-card max-w-md">
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -318,6 +442,8 @@ export default function Banking() {
                       await initiateDeposit(accountLinkId, amount);
                       alert('Deposit initiated successfully! Processing time: 1-3 business days.');
                       (e.target as HTMLFormElement).reset();
+                      // Refresh transactions data
+                      await fetchTransactions();
                     } catch (error) {
                       alert('Deposit failed: ' + (error as Error).message);
                     }
@@ -326,7 +452,7 @@ export default function Banking() {
                       <label className="form-label">From Bank Account</label>
                       <select name="accountLinkId" className="form-input" required>
                         <option value="">Select an account</option>
-                        {linkedAccounts.filter(acc => acc.status === 'verified').map(account => (
+                        {bankAccounts.filter(acc => acc.status === 'verified').map(account => (
                           <option key={account.account_link_id} value={account.account_link_id}>
                             {account.bank_name} ••••{account.last_four_digits} ({account.account_type})
                           </option>
@@ -375,7 +501,7 @@ export default function Banking() {
                 Withdraw Funds
               </h2>
               
-              {linkedAccounts.filter(acc => acc.status === 'verified').length === 0 ? (
+              {bankAccounts.filter(acc => acc.status === 'verified').length === 0 ? (
                 <div className="trading-card max-w-md">
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -424,6 +550,8 @@ export default function Banking() {
                       await initiateWithdrawal(accountLinkId, amount);
                       alert(`Withdrawal of $${amount.toFixed(2)} has been initiated successfully! Processing time: 1-3 business days.`);
                       (e.target as HTMLFormElement).reset();
+                      // Refresh transactions data
+                      await fetchTransactions();
                     } catch (error) {
                       alert('Withdrawal failed: ' + (error as Error).message);
                     }
@@ -432,7 +560,7 @@ export default function Banking() {
                       <label className="form-label">To Bank Account</label>
                       <select name="accountLinkId" className="form-input" required>
                         <option value="">Select an account</option>
-                        {linkedAccounts.filter(acc => acc.status === 'verified').map(account => (
+                        {bankAccounts.filter(acc => acc.status === 'verified').map(account => (
                           <option key={account.account_link_id} value={account.account_link_id}>
                             {account.bank_name} ••••{account.last_four_digits} ({account.account_type})
                           </option>
@@ -480,20 +608,38 @@ export default function Banking() {
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
                 Transaction History
               </h2>
-              <div className="trading-card">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-slate-200 dark:border-slate-700">
-                        <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Type</th>
-                        <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Amount</th>
-                        <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Status</th>
-                        <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Date</th>
-                        <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Completed</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transactions.map(txn => (
+              {isLoadingTransactions ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <span className="ml-2 text-slate-600 dark:text-slate-300">Loading transactions...</span>
+                </div>
+              ) : transactions.length === 0 ? (
+                <div className="trading-card max-w-md">
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No Transactions</h3>
+                    <p className="text-slate-600 dark:text-slate-300">Your transaction history will appear here once you make deposits or withdrawals.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="trading-card">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-700">
+                          <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Type</th>
+                          <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Amount</th>
+                          <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Status</th>
+                          <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Date</th>
+                          <th className="text-left py-3 font-medium text-slate-900 dark:text-white">Completed</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {transactions.map(txn => (
                         <tr key={txn.transaction_id} className="border-b border-slate-100 dark:border-slate-800">
                           <td className="py-3">
                             <div className="flex items-center gap-2">
@@ -526,10 +672,11 @@ export default function Banking() {
                           </td>
                         </tr>
                       ))}
-                    </tbody>
-                  </table>
+                        </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
@@ -572,6 +719,8 @@ export default function Banking() {
                     formData.get('accountHolderName') as string
                   );
                   setLinkAccountStep('verification');
+                  // Refresh bank accounts data
+                  await fetchBankAccounts();
                 } catch (error) {
                   alert('Failed to link account: ' + (error as Error).message);
                   setLinkAccountStep('form');
@@ -583,11 +732,14 @@ export default function Banking() {
                     type="text" 
                     name="routingNumber"
                     className="form-input" 
-                    placeholder="123456789" 
+                    placeholder="021000021" 
                     required
                     pattern="[0-9]{9}"
                     title="Please enter a 9-digit routing number"
                   />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    Test routing numbers: 021000021 (Chase), 026009593 (BofA), 122000247 (Wells Fargo)
+                  </p>
                 </div>
                 <div>
                   <label className="form-label">Account Number</label>
@@ -743,18 +895,41 @@ export default function Banking() {
               </div>
             </div>
 
-            <form className="space-y-4">
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const amount1 = parseFloat(formData.get('amount1') as string);
+              const amount2 = parseFloat(formData.get('amount2') as string);
+              
+              if (!selectedAccountForVerification) {
+                alert('No account selected for verification');
+                return;
+              }
+              
+              try {
+                const response = await verifyBankAccount(selectedAccountForVerification, [amount1, amount2]);
+                alert('Account verified successfully!');
+                setShowVerifyAccount(false);
+                setSelectedAccountForVerification(null);
+                // Refresh bank accounts data
+                await fetchBankAccounts();
+              } catch (error) {
+                alert('Verification failed: ' + (error as Error).message);
+              }
+            }} className="space-y-4">
               <div>
                 <label className="form-label">First Deposit Amount</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">$</span>
                   <input 
                     type="number" 
+                    name="amount1"
                     className="form-input pl-8" 
                     placeholder="0.01"
                     min="0.01"
                     max="0.99"
                     step="0.01"
+                    required
                   />
                 </div>
               </div>
@@ -764,11 +939,13 @@ export default function Banking() {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">$</span>
                   <input 
                     type="number" 
+                    name="amount2"
                     className="form-input pl-8" 
                     placeholder="0.23"
                     min="0.01"
                     max="0.99"
                     step="0.01"
+                    required
                   />
                 </div>
               </div>

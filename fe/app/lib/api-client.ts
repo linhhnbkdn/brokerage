@@ -232,6 +232,8 @@ export async function refreshAccessToken(): Promise<boolean> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return false;
 
+  console.log("🔄 Attempting to refresh access token...");
+
   try {
     const { data, error } = await api.POST("/api/auth/refresh/", {
       body: {
@@ -239,13 +241,47 @@ export async function refreshAccessToken(): Promise<boolean> {
       },
     });
 
-    if (error || !data) return false;
+    if (error || !data) {
+      console.error("❌ Token refresh failed:", error);
+      clearTokens(); // Clear invalid tokens
+      return false;
+    }
 
+    console.log("✅ Token refreshed successfully");
     storeTokens(data);
     return true;
   } catch (error) {
-    console.error("Token refresh failed:", error);
+    console.error("❌ Token refresh error:", error);
+    clearTokens(); // Clear invalid tokens
     return false;
+  }
+}
+
+/**
+ * Make an authenticated request with automatic token refresh
+ */
+export async function makeAuthenticatedRequest<T>(
+  requestFn: () => Promise<T>
+): Promise<T> {
+  try {
+    return await requestFn();
+  } catch (error: any) {
+    // Check if it's a 401 error (token expired)
+    if (error?.status === 401 || (error?.response?.status === 401)) {
+      console.log("🔄 Got 401, attempting token refresh...");
+      
+      const refreshed = await refreshAccessToken();
+      if (refreshed) {
+        console.log("✅ Token refreshed, retrying request...");
+        return await requestFn();
+      } else {
+        console.log("❌ Token refresh failed, redirecting to login");
+        clearTokens();
+        // In a real app, you might redirect to login here
+        throw new Error("Authentication failed - please login again");
+      }
+    }
+    throw error;
   }
 }
 
@@ -284,7 +320,7 @@ export async function getCurrentUser(): Promise<ProtectedResponse> {
 }
 
 /**
- * Link a new bank account
+ * Link a new bank account with automatic token refresh
  */
 export async function linkBankAccount(
   routingNumber: string,
@@ -292,10 +328,10 @@ export async function linkBankAccount(
   accountType: 'checking' | 'savings',
   accountHolderName: string
 ) {
-  console.log('🔄 Making bank account link request to:', API_BASE_URL + "/api/banking/link-account/");
-  console.log('📝 Bank account data:', { routingNumber, accountType, accountHolderName });
-  
-  try {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Making bank account link request to:', API_BASE_URL + "/api/banking/link-account/");
+    console.log('📝 Bank account data:', { routingNumber, accountType, accountHolderName });
+    
     const response = await fetch(API_BASE_URL + "/api/banking/link-account/", {
       method: "POST",
       headers: {
@@ -317,14 +353,13 @@ export async function linkBankAccount(
     console.log('✅ Bank link response data:', data);
 
     if (!response.ok) {
-      throw new Error(data?.error || 'Failed to link bank account');
+      const error = new Error(data?.error || 'Failed to link bank account') as any;
+      error.status = response.status;
+      throw error;
     }
 
     return data;
-  } catch (error) {
-    console.error('❌ Bank link error:', error);
-    throw error;
-  }
+  });
 }
 
 /**
@@ -452,11 +487,95 @@ export async function verifyBankAccount(
 }
 
 /**
- * Initialize the API client
+ * Get user's bank accounts with automatic token refresh
+ */
+export async function getBankAccounts() {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Making get bank accounts request to:', API_BASE_URL + "/api/banking/accounts/");
+    
+    const response = await fetch(API_BASE_URL + "/api/banking/accounts/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    console.log('📡 Bank accounts response status:', response.status);
+    
+    const data = await response.json();
+    console.log('✅ Bank accounts response data:', data);
+
+    if (!response.ok) {
+      const error = new Error(data?.error || 'Failed to fetch bank accounts') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    return data;
+  });
+}
+
+/**
+ * Get transaction history with automatic token refresh
+ */
+export async function getTransactionHistory() {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Making get transactions request to:', API_BASE_URL + "/api/banking/transactions/");
+    
+    const response = await fetch(API_BASE_URL + "/api/banking/transactions/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    console.log('📡 Transactions response status:', response.status);
+    
+    const data = await response.json();
+    console.log('✅ Transactions response data:', data);
+
+    if (!response.ok) {
+      const error = new Error(data?.error || 'Failed to fetch transactions') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    return data;
+  });
+}
+
+/**
+ * Initialize the API client with automatic token refresh
  * Call this once in your app initialization
  */
 export function initializeApiClient() {
-  // Client is initialized, no middleware setup needed for now
+  // Set up periodic token refresh (every 10 minutes)
+  if (typeof window !== "undefined") {
+    setInterval(async () => {
+      const accessToken = getAccessToken();
+      const refreshToken = getRefreshToken();
+      
+      if (accessToken && refreshToken) {
+        try {
+          // Check if token is close to expiry (within 2 minutes)
+          const payload = JSON.parse(atob(accessToken.split(".")[1]));
+          const now = Date.now() / 1000;
+          const timeUntilExpiry = payload.exp - now;
+          
+          if (timeUntilExpiry < 120) { // 2 minutes
+            console.log("🔄 Token expiring soon, refreshing proactively...");
+            await refreshAccessToken();
+          }
+        } catch (error) {
+          console.error("❌ Error checking token expiry:", error);
+        }
+      }
+    }, 10 * 60 * 1000); // Every 10 minutes
+  }
 }
 
 // Default export for convenience

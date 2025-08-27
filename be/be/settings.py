@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
-from cryptography.fernet import Fernet
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -177,4 +176,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Banking encryption key for sensitive data
 # In production, use environment variable
-BANKING_ENCRYPTION_KEY = os.environ.get("BANKING_ENCRYPTION_KEY", Fernet.generate_key())
+# For development, use a fixed key to avoid decryption errors
+_DEFAULT_KEY = b'RcsUJD4tS1UGZRr4rQltdpagkfa28ormZyI_51yc54o='
+BANKING_ENCRYPTION_KEY = os.environ.get("BANKING_ENCRYPTION_KEY", _DEFAULT_KEY)
