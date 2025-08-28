@@ -26,6 +26,10 @@ dependencies = [
     "drf-spectacular>=0.28.0",
     "cryptography>=45.0.6",
     "dependency-injector>=4.48.1",
+    "pytest-django>=4.11.1",
+    "pytest-cov>=6.2.1",
+    "factory-boy>=3.3.3",
+    "freezegun>=1.5.5",
 ]
 
 [project.optional-dependencies]
