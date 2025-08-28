@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Django Backend API
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    container_name: brokerpro-backend
+    environment:
+      # Django Settings
+      DJANGO_SECRET_KEY: django-insecure-local-dev-key-change-in-production
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      
+      # Banking Encryption
+      BANKING_ENCRYPTION_KEY: RcsUJD4tS1UGZRr4rQltdpagkfa28ormZyI_51yc54o=
+    volumes:
+      - ./be:/app
+    ports:
+      - "8000:8000"
+    networks:
+      - brokerpro-network
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        daphne -b 0.0.0.0 -p 8000 be.asgi:application
+      "
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    container_name: brokerpro-frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+      VITE_WS_URL: ws://localhost:8000/ws/market-data/
+      VITE_APP_NAME: BrokerPro
+    volumes:
+      - ./fe:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - brokerpro-network
+    command: npm run start
+
+networks:
+  brokerpro-network:
+    driver: bridge

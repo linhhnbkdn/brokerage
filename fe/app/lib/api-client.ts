@@ -1171,5 +1171,174 @@ export async function getMetricsSummary(): Promise<any> {
   });
 }
 
+// Exchange API Types (based on generated schema)
+export interface MarketDataSnapshot {
+  id: string;
+  symbol: string;
+  price: string;
+  change: string;
+  change_percent: string;
+  volume: number;
+  bid: string;
+  ask: string;
+  spread: string;
+  spread_percent: string;
+  timestamp?: string;
+  exchange?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExchangeStatus {
+  status: string;
+  message: string;
+  uptime?: string;
+  connected_clients?: number;
+}
+
+/**
+ * EXCHANGE API FUNCTIONS
+ */
+
+/**
+ * Get exchange system status
+ */
+export async function getExchangeStatus(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting exchange status...');
+    
+    const response = await fetch(API_BASE_URL + "/api/exchange/api/v1/status/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch exchange status') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Exchange status fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get market data for all symbols
+ */
+export async function getMarketData(): Promise<MarketDataSnapshot[]> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting market data...');
+    
+    const response = await fetch(API_BASE_URL + "/api/exchange/api/v1/market-data/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch market data') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Market data fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get current prices for symbols
+ */
+export async function getCurrentPrices(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting current prices...');
+    
+    const response = await fetch(API_BASE_URL + "/api/exchange/api/v1/market-data/current_prices/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch current prices') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Current prices fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get supported symbols
+ */
+export async function getSupportedSymbols(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting supported symbols...');
+    
+    const response = await fetch(API_BASE_URL + "/api/exchange/api/v1/market-data/supported_symbols/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch supported symbols') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Supported symbols fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get market statistics
+ */
+export async function getMarketStatistics(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting market statistics...');
+    
+    const response = await fetch(API_BASE_URL + "/api/exchange/api/v1/market-data/statistics/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch market statistics') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Market statistics fetched successfully');
+    return data;
+  });
+}
+
 // Default export for convenience
 export default api;

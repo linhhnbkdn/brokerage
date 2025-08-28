@@ -5,7 +5,7 @@ Market data API views
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from exchange.models import MarketDataSnapshot
 from exchange.serializers import MarketDataSnapshotSerializer
@@ -15,7 +15,7 @@ from exchange.services import MarketDataService
 class MarketDataViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for market data operations"""
     
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Market data should be publicly accessible
     serializer_class = MarketDataSnapshotSerializer
     
     def get_queryset(self):

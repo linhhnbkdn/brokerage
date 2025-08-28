@@ -182,7 +182,7 @@ export default function Banking() {
                 <a href="/banking" className="text-blue-600 dark:text-blue-400 font-medium">
                   Banking
                 </a>
-                <a href="#" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <a href="/trading" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   Trading
                 </a>
               </div>

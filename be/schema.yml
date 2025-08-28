@@ -271,6 +271,322 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/exchange/api/v1/events/:
+    get:
+      operationId: exchange_api_v1_events_retrieve
+      description: Placeholder ViewSet for market events
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/exchange/api/v1/events/{id}/:
+    get:
+      operationId: exchange_api_v1_events_retrieve_2
+      description: Placeholder ViewSet for market events
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/exchange/api/v1/market-data/:
+    get:
+      operationId: exchange_api_v1_market_data_list
+      description: ViewSet for market data operations
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarketDataSnapshot'
+          description: ''
+  /api/exchange/api/v1/market-data/{id}/:
+    get:
+      operationId: exchange_api_v1_market_data_retrieve
+      description: ViewSet for market data operations
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this market data snapshot.
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketDataSnapshot'
+          description: ''
+  /api/exchange/api/v1/market-data/current_prices/:
+    get:
+      operationId: exchange_api_v1_market_data_current_prices_retrieve
+      description: Get current prices for symbols
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketDataSnapshot'
+          description: ''
+  /api/exchange/api/v1/market-data/statistics/:
+    get:
+      operationId: exchange_api_v1_market_data_statistics_retrieve
+      description: Get market statistics for a symbol
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketDataSnapshot'
+          description: ''
+  /api/exchange/api/v1/market-data/supported_symbols/:
+    get:
+      operationId: exchange_api_v1_market_data_supported_symbols_retrieve
+      description: Get list of supported symbols
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketDataSnapshot'
+          description: ''
+  /api/exchange/api/v1/orders/:
+    get:
+      operationId: exchange_api_v1_orders_retrieve
+      description: Placeholder ViewSet for orders
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: exchange_api_v1_orders_create
+      description: Placeholder ViewSet for orders
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          description: No response body
+  /api/exchange/api/v1/orders/{id}/:
+    get:
+      operationId: exchange_api_v1_orders_retrieve_2
+      description: Placeholder ViewSet for orders
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: exchange_api_v1_orders_update
+      description: Placeholder ViewSet for orders
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: exchange_api_v1_orders_partial_update
+      description: Placeholder ViewSet for orders
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: exchange_api_v1_orders_destroy
+      description: Placeholder ViewSet for orders
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/exchange/api/v1/status/:
+    get:
+      operationId: exchange_api_v1_status_retrieve
+      description: Get exchange system status
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/exchange/api/v1/subscriptions/:
+    get:
+      operationId: exchange_api_v1_subscriptions_retrieve
+      description: Placeholder ViewSet for subscriptions
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: exchange_api_v1_subscriptions_create
+      description: Placeholder ViewSet for subscriptions
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          description: No response body
+  /api/exchange/api/v1/subscriptions/{id}/:
+    get:
+      operationId: exchange_api_v1_subscriptions_retrieve_2
+      description: Placeholder ViewSet for subscriptions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: exchange_api_v1_subscriptions_update
+      description: Placeholder ViewSet for subscriptions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: exchange_api_v1_subscriptions_partial_update
+      description: Placeholder ViewSet for subscriptions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: exchange_api_v1_subscriptions_destroy
+      description: Placeholder ViewSet for subscriptions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - exchange
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/portfolio/metrics/:
     get:
       operationId: portfolio_metrics_list
@@ -985,6 +1301,84 @@ components:
         * `mutual_fund` - Mutual Fund
         * `option` - Option
         * `future` - Future
+    MarketDataSnapshot:
+      type: object
+      description: Serializer for MarketDataSnapshot
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        symbol:
+          type: string
+          description: Trading symbol (e.g., AAPL, BTC-USD)
+          maxLength: 10
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,6})?$
+          description: Current price
+        change:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,6})?$
+          description: Price change from previous close
+        change_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Percentage change from previous close
+        volume:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Trading volume
+        bid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,6})?$
+          description: Best bid price
+        ask:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,6})?$
+          description: Best ask price
+        spread:
+          type: string
+          readOnly: true
+        spread_percent:
+          type: string
+          readOnly: true
+        timestamp:
+          type: string
+          format: date-time
+          description: Market data timestamp
+        exchange:
+          type: string
+          description: Exchange name
+          maxLength: 20
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - ask
+      - bid
+      - change
+      - change_percent
+      - created_at
+      - id
+      - price
+      - spread
+      - spread_percent
+      - symbol
+      - updated_at
+      - volume
     MetricsCalculationRequest:
       type: object
       description: Serializer for requesting metrics calculation

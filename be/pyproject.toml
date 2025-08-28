@@ -32,6 +32,7 @@ dependencies = [
     "pytest-cov>=6.2.1",
     "factory-boy>=3.3.3",
     "freezegun>=1.5.5",
+    "daphne>=4.2.1",
 ]
 
 [project.optional-dependencies]

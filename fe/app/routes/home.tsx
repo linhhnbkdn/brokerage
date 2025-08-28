@@ -216,7 +216,7 @@ export default function Home() {
             <div>
               <h4 className="text-white font-medium mb-4">Platform</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Trading</a></li>
+                <li><a href="/trading" className="hover:text-white transition-colors">Trading</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Portfolio</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Analytics</a></li>
               </ul>
