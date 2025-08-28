@@ -38,12 +38,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",
     "corsheaders",
     "rest_framework",
     "drf_spectacular",
     "authentication",
     "banking",
     "portfolio",
+    "exchange",
 ]
 
 MIDDLEWARE = [
@@ -75,6 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "be.wsgi.application"
+ASGI_APPLICATION = "be.asgi.application"
 
 
 # Database
@@ -135,6 +138,31 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "unique-snowflake",
     }
+}
+
+# Channels and Redis configuration
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+# Redis configuration for exchange integration
+REDIS_CONFIG = {
+    "HOST": os.environ.get("REDIS_HOST", "127.0.0.1"),
+    "PORT": int(os.environ.get("REDIS_PORT", 6379)),
+    "DB": int(os.environ.get("REDIS_DB", 0)),
+}
+
+# Exchange settings
+EXCHANGE_SETTINGS = {
+    "PRICE_UPDATE_INTERVAL": 2,  # seconds
+    "MAX_SUBSCRIPTIONS_PER_USER": 50,
+    "MARKET_DATA_RETENTION_HOURS": 24,
+    "ENABLE_MARKET_SIMULATOR": True,
 }
 
 # Django REST Framework configuration

@@ -1,0 +1,81 @@
+sequenceDiagram
+    participant CLIENT as Brokerage Client
+    participant WS_SERVER as WebSocket Server
+    participant EXCHANGE_SIM as Exchange Simulator
+    participant REDIS as Redis Cache
+
+    Note over CLIENT, REDIS: Exchange Integration - WebSocket Real-time Data
+
+    rect rgb(240, 248, 255)
+        Note over CLIENT, WS_SERVER: 1. WebSocket Connection & Authentication
+        CLIENT->>+WS_SERVER: Connect WebSocket
+        Note right of CLIENT: wss://localhost:8000/ws/market-data/
+        
+        CLIENT->>WS_SERVER: Send Auth Message
+        Note right of CLIENT: {<br/>  "type": "auth",<br/>  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."<br/>}
+        
+        WS_SERVER->>WS_SERVER: validate_jwt_token()
+        WS_SERVER-->>CLIENT: Auth Success
+        Note left of WS_SERVER: {<br/>  "type": "auth_success",<br/>  "user_id": 12345,<br/>  "message": "Connected successfully"<br/>}
+    end
+
+    rect rgb(248, 255, 240)
+        Note over CLIENT, REDIS: 2. Symbol Subscription
+        CLIENT->>WS_SERVER: Subscribe to Symbols
+        Note right of CLIENT: {<br/>  "type": "subscribe",<br/>  "symbols": ["AAPL", "GOOGL", "BTC-USD"]<br/>}
+        
+        WS_SERVER->>REDIS: Store User Subscriptions
+        WS_SERVER-->>CLIENT: Subscription Confirmed
+        Note left of WS_SERVER: {<br/>  "type": "subscribed",<br/>  "symbols": ["AAPL", "GOOGL", "BTC-USD"],<br/>  "count": 3<br/>}
+    end
+
+    rect rgb(255, 248, 240)
+        Note over EXCHANGE_SIM, CLIENT: 3. Real-time Price Updates
+        
+        loop Every 2-5 seconds
+            EXCHANGE_SIM->>REDIS: Publish Price Update
+            Note right of EXCHANGE_SIM: {<br/>  "symbol": "AAPL",<br/>  "price": 150.25,<br/>  "change": 1.25,<br/>  "change_percent": 0.84,<br/>  "volume": 1250000,<br/>  "timestamp": "2024-01-15T10:30:15Z"<br/>}
+            
+            REDIS->>WS_SERVER: Price Update Notification
+            WS_SERVER-->>CLIENT: Send Price to Subscribed Users
+            Note left of WS_SERVER: {<br/>  "type": "price_update",<br/>  "symbol": "AAPL",<br/>  "price": 150.25,<br/>  "change": 1.25,<br/>  "change_percent": 0.84,<br/>  "volume": 1250000,<br/>  "bid": 150.24,<br/>  "ask": 150.26,<br/>  "timestamp": "2024-01-15T10:30:15Z"<br/>}
+        end
+    end
+
+    rect rgb(245, 255, 245)
+        Note over CLIENT, REDIS: 4. Order Placement via WebSocket
+        CLIENT->>WS_SERVER: Place Order
+        Note right of CLIENT: {<br/>  "type": "place_order",<br/>  "symbol": "AAPL",<br/>  "side": "buy",<br/>  "quantity": 100,<br/>  "order_type": "market"<br/>}
+        
+        WS_SERVER->>EXCHANGE_SIM: Submit Order
+        EXCHANGE_SIM->>EXCHANGE_SIM: Execute Order (Dummy)
+        EXCHANGE_SIM->>REDIS: Order Status Update
+        
+        REDIS->>WS_SERVER: Execution Notification
+        WS_SERVER-->>CLIENT: Order Execution Update
+        Note left of WS_SERVER: {<br/>  "type": "order_executed",<br/>  "order_id": "ord_123456",<br/>  "symbol": "AAPL",<br/>  "status": "filled",<br/>  "quantity": 100,<br/>  "price": 150.28,<br/>  "timestamp": "2024-01-15T10:30:20Z"<br/>}
+    end
+
+    rect rgb(255, 245, 255)
+        Note over CLIENT, WS_SERVER: 5. Market Alerts & Events
+        EXCHANGE_SIM->>REDIS: Market Event
+        Note right of EXCHANGE_SIM: {<br/>  "type": "market_event",<br/>  "event": "earnings_beat",<br/>  "symbol": "AAPL",<br/>  "impact": "high",<br/>  "message": "Apple beats Q4 earnings expectations"<br/>}
+        
+        REDIS->>WS_SERVER: Event Notification
+        WS_SERVER-->>CLIENT: Market Alert
+        Note left of WS_SERVER: {<br/>  "type": "market_alert",<br/>  "symbol": "AAPL",<br/>  "severity": "high",<br/>  "title": "Earnings Beat",<br/>  "message": "Apple beats Q4 earnings expectations",<br/>  "timestamp": "2024-01-15T16:00:00Z"<br/>}
+    end
+
+    rect rgb(255, 255, 240)
+        Note over CLIENT, WS_SERVER: 6. Connection Management
+        CLIENT->>WS_SERVER: Unsubscribe
+        Note right of CLIENT: {<br/>  "type": "unsubscribe",<br/>  "symbols": ["BTC-USD"]<br/>}
+        
+        WS_SERVER->>REDIS: Remove Subscription
+        WS_SERVER-->>CLIENT: Unsubscribe Confirmed
+        Note left of WS_SERVER: {<br/>  "type": "unsubscribed",<br/>  "symbols": ["BTC-USD"]<br/>}
+        
+        CLIENT->>WS_SERVER: Disconnect
+        WS_SERVER->>REDIS: Cleanup User Data
+        WS_SERVER-->>CLIENT: Connection Closed
+    end
