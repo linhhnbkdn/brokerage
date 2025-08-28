@@ -104,10 +104,1138 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/banking/accounts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Get all bank accounts for the authenticated user */
+        get: operations["banking_accounts_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/banking/deposit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Initiate a deposit transaction */
+        post: operations["banking_deposit_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/banking/link-account/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Link a new bank account to the user */
+        post: operations["banking_link_account_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/banking/transactions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Get user's transaction history */
+        get: operations["banking_transactions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/banking/verify-account/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Verify bank account using micro-deposit amounts */
+        post: operations["banking_verify_account_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/banking/withdraw/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Initiate a withdrawal transaction */
+        post: operations["banking_withdraw_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/metrics/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/metrics/
+         *     List performance metrics with optional period filtering */
+        get: operations["portfolio_metrics_list"];
+        put?: never;
+        /** @description Performance metrics operations */
+        post: operations["portfolio_metrics_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/metrics/{metrics_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/metrics/{metrics_id}/
+         *     Get detailed metrics information */
+        get: operations["portfolio_metrics_retrieve"];
+        /** @description Performance metrics operations */
+        put: operations["portfolio_metrics_update"];
+        post?: never;
+        /** @description Performance metrics operations */
+        delete: operations["portfolio_metrics_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Performance metrics operations */
+        patch: operations["portfolio_metrics_partial_update"];
+        trace?: never;
+    };
+    "/api/portfolio/metrics/calculate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST /api/portfolio/metrics/calculate/
+         *     Calculate performance metrics for a specified period */
+        post: operations["portfolio_metrics_calculate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/metrics/compare/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/metrics/compare/?periods=1M,3M,6M,1Y
+         *     Compare performance metrics across multiple periods */
+        get: operations["portfolio_metrics_compare_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/metrics/summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/metrics/summary/
+         *     Get performance metrics summary for all periods */
+        get: operations["portfolio_metrics_summary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/overview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/overview/
+         *     Get current portfolio overview with positions and performance */
+        get: operations["portfolio_overview_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/performance/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/performance/?period=1M
+         *     Get portfolio performance data for specified period */
+        get: operations["portfolio_performance_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/performance/summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/performance/summary/
+         *     Get quick performance summary for dashboard */
+        get: operations["portfolio_performance_summary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/positions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/positions/
+         *     List user's portfolio positions */
+        get: operations["portfolio_positions_list"];
+        put?: never;
+        /** @description POST /api/portfolio/positions/
+         *     Create a new position */
+        post: operations["portfolio_positions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/positions/{position_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/positions/{position_id}/
+         *     Get detailed position information */
+        get: operations["portfolio_positions_retrieve"];
+        /** @description PUT /api/portfolio/positions/{position_id}/
+         *     Update position (mainly for adjusting cost basis, quantity) */
+        put: operations["portfolio_positions_update"];
+        post?: never;
+        /** @description DELETE /api/portfolio/positions/{position_id}/
+         *     Close/delete a position */
+        delete: operations["portfolio_positions_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Position CRUD operations */
+        patch: operations["portfolio_positions_partial_update"];
+        trace?: never;
+    };
+    "/api/portfolio/positions/{position_id}/performance/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/positions/{position_id}/performance/
+         *     Get individual position performance data */
+        get: operations["portfolio_positions_performance_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/positions/{position_id}/update_price/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST /api/portfolio/positions/{position_id}/update_price/
+         *     Update current market price for a position */
+        post: operations["portfolio_positions_update_price_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/positions/allocation/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/positions/allocation/
+         *     Get portfolio allocation breakdown */
+        get: operations["portfolio_positions_allocation_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/snapshots/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/snapshots/
+         *     List portfolio snapshots with optional date filtering */
+        get: operations["portfolio_snapshots_list"];
+        put?: never;
+        /** @description Portfolio snapshot operations */
+        post: operations["portfolio_snapshots_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/snapshots/{snapshot_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/snapshots/{snapshot_id}/
+         *     Get detailed snapshot information */
+        get: operations["portfolio_snapshots_retrieve"];
+        /** @description Portfolio snapshot operations */
+        put: operations["portfolio_snapshots_update"];
+        post?: never;
+        /** @description Portfolio snapshot operations */
+        delete: operations["portfolio_snapshots_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Portfolio snapshot operations */
+        patch: operations["portfolio_snapshots_partial_update"];
+        trace?: never;
+    };
+    "/api/portfolio/snapshots/{snapshot_id}/delete_snapshot/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description DELETE /api/portfolio/snapshots/{snapshot_id}/delete_snapshot/
+         *     Delete a specific snapshot */
+        delete: operations["portfolio_snapshots_delete_snapshot_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/snapshots/chart_data/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/snapshots/chart_data/?period=1M
+         *     Get simplified snapshot data for charting */
+        get: operations["portfolio_snapshots_chart_data_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/snapshots/create_snapshot/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST /api/portfolio/snapshots/create_snapshot/
+         *     Create a new portfolio snapshot */
+        post: operations["portfolio_snapshots_create_snapshot_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portfolio/snapshots/latest/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/portfolio/snapshots/latest/
+         *     Get the most recent portfolio snapshot */
+        get: operations["portfolio_snapshots_latest_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
+    schemas: {
+        /**
+         * @description * `stock` - Stock
+         *     * `bond` - Bond
+         *     * `crypto` - Cryptocurrency
+         *     * `etf` - Exchange Traded Fund
+         *     * `mutual_fund` - Mutual Fund
+         *     * `option` - Option
+         *     * `future` - Future
+         * @enum {string}
+         */
+        InstrumentTypeEnum: "stock" | "bond" | "crypto" | "etf" | "mutual_fund" | "option" | "future";
+        /** @description Serializer for requesting metrics calculation */
+        MetricsCalculationRequest: {
+            period: components["schemas"]["PeriodEnum"];
+            /** @default false */
+            force_recalculate: boolean;
+            /** @default true */
+            include_benchmark: boolean;
+            /**
+             * @description Benchmark symbol (default: SPY for S&P 500)
+             * @default SPY
+             */
+            benchmark_symbol: string;
+        };
+        /** @description Serializer for requesting metrics calculation */
+        MetricsCalculationRequestRequest: {
+            period: components["schemas"]["PeriodEnum"];
+            /** @default false */
+            force_recalculate: boolean;
+            /** @default true */
+            include_benchmark: boolean;
+            /**
+             * @description Benchmark symbol (default: SPY for S&P 500)
+             * @default SPY
+             */
+            benchmark_symbol: string;
+        };
+        /** @description Performance metrics serializer */
+        PatchedPerformanceMetricsRequest: {
+            period?: components["schemas"]["PeriodEnum"];
+            /** Format: date */
+            start_date?: string;
+            /** Format: date */
+            end_date?: string;
+            /**
+             * Format: decimal
+             * @description Total return percentage for period
+             */
+            total_return?: string;
+            /**
+             * Format: decimal
+             * @description Annualized return percentage
+             */
+            annualized_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Time-weighted return percentage
+             */
+            time_weighted_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Portfolio volatility (standard deviation)
+             */
+            volatility?: string | null;
+            /**
+             * Format: decimal
+             * @description Risk-adjusted return ratio
+             */
+            sharpe_ratio?: string | null;
+            /**
+             * Format: decimal
+             * @description Maximum drawdown percentage
+             */
+            max_drawdown?: string | null;
+            /**
+             * Format: decimal
+             * @description Benchmark return for same period
+             */
+            benchmark_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Alpha vs benchmark
+             */
+            alpha?: string | null;
+            /**
+             * Format: decimal
+             * @description Beta vs benchmark
+             */
+            beta?: string | null;
+            /**
+             * Format: decimal
+             * @description Portfolio value at start of period
+             */
+            starting_value?: string;
+            /**
+             * Format: decimal
+             * @description Portfolio value at end of period
+             */
+            ending_value?: string;
+            /**
+             * Format: decimal
+             * @description Peak portfolio value during period
+             */
+            peak_value?: string | null;
+            /**
+             * Format: int64
+             * @description Number of trading days in period
+             */
+            trading_days?: number;
+            /**
+             * Format: int64
+             * @description Number of trades executed in period
+             */
+            number_of_trades?: number;
+            /** @description Notes about calculation methodology */
+            calculation_notes?: string | null;
+        };
+        /** @description Portfolio snapshot serializer */
+        PatchedPortfolioSnapshotRequest: {
+            /** Format: date */
+            snapshot_date?: string;
+            /**
+             * Format: decimal
+             * @description Total portfolio market value
+             */
+            total_value?: string;
+            /**
+             * Format: decimal
+             * @description Cash available in account
+             */
+            cash_balance?: string;
+            /**
+             * Format: decimal
+             * @description Total cost basis of all positions
+             */
+            total_cost_basis?: string;
+            /**
+             * Format: decimal
+             * @description Gain/loss for the day
+             */
+            day_gain_loss?: string;
+            /**
+             * Format: decimal
+             * @description Daily gain/loss percentage
+             */
+            day_gain_loss_percent?: string;
+            /**
+             * Format: decimal
+             * @description Total unrealized gain/loss
+             */
+            total_gain_loss?: string;
+            /**
+             * Format: decimal
+             * @description Total gain/loss percentage
+             */
+            total_gain_loss_percent?: string;
+            /** @description Detailed holdings data for this snapshot */
+            holdings_data?: unknown;
+            /** @description Market index values for comparison */
+            market_indexes?: unknown;
+        };
+        /** @description Detailed Position serializer */
+        PatchedPositionRequest: {
+            symbol?: string;
+            instrument_type?: components["schemas"]["InstrumentTypeEnum"];
+            /** @description Full name of the instrument */
+            name?: string;
+            /**
+             * Format: decimal
+             * @description Current quantity held
+             */
+            quantity?: string;
+            /**
+             * Format: decimal
+             * @description Average cost basis per share/unit
+             */
+            average_cost?: string;
+            /**
+             * Format: decimal
+             * @description Latest market price
+             */
+            current_price?: string;
+            status?: components["schemas"]["StatusEnum"];
+            /** Format: decimal */
+            total_dividends?: string;
+        };
+        /** @description Performance metrics serializer */
+        PerformanceMetrics: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for metrics record
+             */
+            readonly metrics_id: string;
+            period: components["schemas"]["PeriodEnum"];
+            readonly period_display: string;
+            /** Format: date */
+            start_date: string;
+            /** Format: date */
+            end_date: string;
+            /** Format: date-time */
+            readonly calculated_at: string;
+            /**
+             * Format: decimal
+             * @description Total return percentage for period
+             */
+            total_return: string;
+            /**
+             * Format: decimal
+             * @description Annualized return percentage
+             */
+            annualized_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Time-weighted return percentage
+             */
+            time_weighted_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Portfolio volatility (standard deviation)
+             */
+            volatility?: string | null;
+            /**
+             * Format: decimal
+             * @description Risk-adjusted return ratio
+             */
+            sharpe_ratio?: string | null;
+            /**
+             * Format: decimal
+             * @description Maximum drawdown percentage
+             */
+            max_drawdown?: string | null;
+            /**
+             * Format: decimal
+             * @description Benchmark return for same period
+             */
+            benchmark_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Alpha vs benchmark
+             */
+            alpha?: string | null;
+            /**
+             * Format: decimal
+             * @description Beta vs benchmark
+             */
+            beta?: string | null;
+            /**
+             * Format: decimal
+             * @description Portfolio value at start of period
+             */
+            starting_value: string;
+            /**
+             * Format: decimal
+             * @description Portfolio value at end of period
+             */
+            ending_value: string;
+            /**
+             * Format: decimal
+             * @description Peak portfolio value during period
+             */
+            peak_value?: string | null;
+            /**
+             * Format: int64
+             * @description Number of trading days in period
+             */
+            trading_days?: number;
+            /**
+             * Format: int64
+             * @description Number of trades executed in period
+             */
+            number_of_trades?: number;
+            readonly outperformed_benchmark: string;
+            readonly is_profitable: string;
+            readonly risk_adjusted_return: string;
+            /** @description Notes about calculation methodology */
+            calculation_notes?: string | null;
+        };
+        /** @description Performance metrics serializer */
+        PerformanceMetricsRequest: {
+            period: components["schemas"]["PeriodEnum"];
+            /** Format: date */
+            start_date: string;
+            /** Format: date */
+            end_date: string;
+            /**
+             * Format: decimal
+             * @description Total return percentage for period
+             */
+            total_return: string;
+            /**
+             * Format: decimal
+             * @description Annualized return percentage
+             */
+            annualized_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Time-weighted return percentage
+             */
+            time_weighted_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Portfolio volatility (standard deviation)
+             */
+            volatility?: string | null;
+            /**
+             * Format: decimal
+             * @description Risk-adjusted return ratio
+             */
+            sharpe_ratio?: string | null;
+            /**
+             * Format: decimal
+             * @description Maximum drawdown percentage
+             */
+            max_drawdown?: string | null;
+            /**
+             * Format: decimal
+             * @description Benchmark return for same period
+             */
+            benchmark_return?: string | null;
+            /**
+             * Format: decimal
+             * @description Alpha vs benchmark
+             */
+            alpha?: string | null;
+            /**
+             * Format: decimal
+             * @description Beta vs benchmark
+             */
+            beta?: string | null;
+            /**
+             * Format: decimal
+             * @description Portfolio value at start of period
+             */
+            starting_value: string;
+            /**
+             * Format: decimal
+             * @description Portfolio value at end of period
+             */
+            ending_value: string;
+            /**
+             * Format: decimal
+             * @description Peak portfolio value during period
+             */
+            peak_value?: string | null;
+            /**
+             * Format: int64
+             * @description Number of trading days in period
+             */
+            trading_days?: number;
+            /**
+             * Format: int64
+             * @description Number of trades executed in period
+             */
+            number_of_trades?: number;
+            /** @description Notes about calculation methodology */
+            calculation_notes?: string | null;
+        };
+        /** @description Lightweight metrics serializer for overview displays */
+        PerformanceMetricsSummary: {
+            period: components["schemas"]["PeriodEnum"];
+            readonly period_display: string;
+            /**
+             * Format: decimal
+             * @description Total return percentage for period
+             */
+            total_return: string;
+            /**
+             * Format: decimal
+             * @description Portfolio volatility (standard deviation)
+             */
+            volatility?: string | null;
+            /**
+             * Format: decimal
+             * @description Risk-adjusted return ratio
+             */
+            sharpe_ratio?: string | null;
+            readonly is_profitable: string;
+            /** Format: date-time */
+            readonly calculated_at: string;
+        };
+        /**
+         * @description * `1D` - 1 Day
+         *     * `1W` - 1 Week
+         *     * `1M` - 1 Month
+         *     * `3M` - 3 Months
+         *     * `6M` - 6 Months
+         *     * `1Y` - 1 Year
+         *     * `3Y` - 3 Years
+         *     * `5Y` - 5 Years
+         *     * `ALL` - All Time
+         * @enum {string}
+         */
+        PeriodEnum: "1D" | "1W" | "1M" | "3M" | "6M" | "1Y" | "3Y" | "5Y" | "ALL";
+        /** @description Portfolio snapshot serializer */
+        PortfolioSnapshot: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for snapshot
+             */
+            readonly snapshot_id: string;
+            /** Format: date */
+            snapshot_date: string;
+            /** Format: date-time */
+            readonly snapshot_time: string;
+            /**
+             * Format: decimal
+             * @description Total portfolio market value
+             */
+            total_value: string;
+            /**
+             * Format: decimal
+             * @description Cash available in account
+             */
+            cash_balance: string;
+            readonly total_portfolio_value: string;
+            /**
+             * Format: decimal
+             * @description Total cost basis of all positions
+             */
+            total_cost_basis: string;
+            /**
+             * Format: decimal
+             * @description Gain/loss for the day
+             */
+            day_gain_loss?: string;
+            /**
+             * Format: decimal
+             * @description Daily gain/loss percentage
+             */
+            day_gain_loss_percent?: string;
+            /**
+             * Format: decimal
+             * @description Total unrealized gain/loss
+             */
+            total_gain_loss?: string;
+            /**
+             * Format: decimal
+             * @description Total gain/loss percentage
+             */
+            total_gain_loss_percent?: string;
+            readonly cash_allocation_percent: string;
+            /** @description Detailed holdings data for this snapshot */
+            holdings_data?: unknown;
+            /** @description Market index values for comparison */
+            market_indexes?: unknown;
+            readonly holdings_count: string;
+            readonly is_profitable: string;
+        };
+        /** @description Portfolio snapshot serializer */
+        PortfolioSnapshotRequest: {
+            /** Format: date */
+            snapshot_date: string;
+            /**
+             * Format: decimal
+             * @description Total portfolio market value
+             */
+            total_value: string;
+            /**
+             * Format: decimal
+             * @description Cash available in account
+             */
+            cash_balance: string;
+            /**
+             * Format: decimal
+             * @description Total cost basis of all positions
+             */
+            total_cost_basis: string;
+            /**
+             * Format: decimal
+             * @description Gain/loss for the day
+             */
+            day_gain_loss?: string;
+            /**
+             * Format: decimal
+             * @description Daily gain/loss percentage
+             */
+            day_gain_loss_percent?: string;
+            /**
+             * Format: decimal
+             * @description Total unrealized gain/loss
+             */
+            total_gain_loss?: string;
+            /**
+             * Format: decimal
+             * @description Total gain/loss percentage
+             */
+            total_gain_loss_percent?: string;
+            /** @description Detailed holdings data for this snapshot */
+            holdings_data?: unknown;
+            /** @description Market index values for comparison */
+            market_indexes?: unknown;
+        };
+        /** @description Lightweight snapshot serializer for time series data */
+        PortfolioSnapshotSummary: {
+            /** Format: date */
+            snapshot_date: string;
+            /**
+             * Format: decimal
+             * @description Total portfolio market value
+             */
+            total_value: string;
+            /**
+             * Format: decimal
+             * @description Cash available in account
+             */
+            cash_balance: string;
+            readonly total_portfolio_value: string;
+            /**
+             * Format: decimal
+             * @description Gain/loss for the day
+             */
+            day_gain_loss?: string;
+            /**
+             * Format: decimal
+             * @description Daily gain/loss percentage
+             */
+            day_gain_loss_percent?: string;
+            /**
+             * Format: decimal
+             * @description Total gain/loss percentage
+             */
+            total_gain_loss_percent?: string;
+        };
+        /** @description Detailed Position serializer */
+        Position: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for position tracking
+             */
+            readonly position_id: string;
+            symbol: string;
+            instrument_type: components["schemas"]["InstrumentTypeEnum"];
+            /** @description Full name of the instrument */
+            name: string;
+            /**
+             * Format: decimal
+             * @description Current quantity held
+             */
+            quantity: string;
+            /**
+             * Format: decimal
+             * @description Average cost basis per share/unit
+             */
+            average_cost: string;
+            /**
+             * Format: decimal
+             * @description Latest market price
+             */
+            current_price?: string;
+            readonly cost_basis: string;
+            readonly current_value: string;
+            readonly unrealized_gain_loss: string;
+            readonly unrealized_gain_loss_percent: string;
+            status?: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly opened_at: string;
+            /** Format: date-time */
+            readonly closed_at: string | null;
+            /** Format: date-time */
+            readonly last_price_update: string | null;
+            /** Format: decimal */
+            total_dividends?: string;
+            readonly is_profitable: string;
+        };
+        /** @description Serializer for creating new positions */
+        PositionCreate: {
+            symbol: string;
+            instrument_type: components["schemas"]["InstrumentTypeEnum"];
+            /** @description Full name of the instrument */
+            name: string;
+            /**
+             * Format: decimal
+             * @description Current quantity held
+             */
+            quantity: string;
+            /**
+             * Format: decimal
+             * @description Average cost basis per share/unit
+             */
+            average_cost: string;
+        };
+        /** @description Serializer for creating new positions */
+        PositionCreateRequest: {
+            symbol: string;
+            instrument_type: components["schemas"]["InstrumentTypeEnum"];
+            /** @description Full name of the instrument */
+            name: string;
+            /**
+             * Format: decimal
+             * @description Current quantity held
+             */
+            quantity: string;
+            /**
+             * Format: decimal
+             * @description Average cost basis per share/unit
+             */
+            average_cost: string;
+        };
+        /** @description Detailed Position serializer */
+        PositionRequest: {
+            symbol: string;
+            instrument_type: components["schemas"]["InstrumentTypeEnum"];
+            /** @description Full name of the instrument */
+            name: string;
+            /**
+             * Format: decimal
+             * @description Current quantity held
+             */
+            quantity: string;
+            /**
+             * Format: decimal
+             * @description Average cost basis per share/unit
+             */
+            average_cost: string;
+            /**
+             * Format: decimal
+             * @description Latest market price
+             */
+            current_price?: string;
+            status?: components["schemas"]["StatusEnum"];
+            /** Format: decimal */
+            total_dividends?: string;
+        };
+        /** @description Lightweight Position serializer for lists */
+        PositionSummary: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for position tracking
+             */
+            position_id?: string;
+            symbol: string;
+            instrument_type: components["schemas"]["InstrumentTypeEnum"];
+            /**
+             * Format: decimal
+             * @description Current quantity held
+             */
+            quantity: string;
+            /**
+             * Format: decimal
+             * @description Latest market price
+             */
+            current_price?: string;
+            readonly current_value: string;
+            readonly unrealized_gain_loss: string;
+            readonly unrealized_gain_loss_percent: string;
+            status?: components["schemas"]["StatusEnum"];
+        };
+        /** @description Serializer for creating snapshots via API */
+        SnapshotCreate: {
+            /** Format: date */
+            snapshot_date?: string;
+            /** @default false */
+            force_recreate: boolean;
+        };
+        /** @description Serializer for creating snapshots via API */
+        SnapshotCreateRequest: {
+            /** Format: date */
+            snapshot_date?: string;
+            /** @default false */
+            force_recreate: boolean;
+        };
+        /**
+         * @description * `active` - Active
+         *     * `closed` - Closed
+         *     * `suspended` - Suspended
+         * @enum {string}
+         */
+        StatusEnum: "active" | "closed" | "suspended";
+    };
     responses: never;
     parameters: never;
     requestBodies: never;
@@ -237,6 +1365,774 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    banking_accounts_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    banking_deposit_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    banking_link_account_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    banking_transactions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    banking_verify_account_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    banking_withdraw_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_metrics_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceMetricsSummary"][];
+                };
+            };
+        };
+    };
+    portfolio_metrics_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerformanceMetricsRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceMetrics"];
+                };
+            };
+        };
+    };
+    portfolio_metrics_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                metrics_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceMetrics"];
+                };
+            };
+        };
+    };
+    portfolio_metrics_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                metrics_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerformanceMetricsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceMetrics"];
+                };
+            };
+        };
+    };
+    portfolio_metrics_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                metrics_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_metrics_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                metrics_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPerformanceMetricsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceMetrics"];
+                };
+            };
+        };
+    };
+    portfolio_metrics_calculate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MetricsCalculationRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricsCalculationRequest"];
+                };
+            };
+        };
+    };
+    portfolio_metrics_compare_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceMetrics"];
+                };
+            };
+        };
+    };
+    portfolio_metrics_summary_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceMetrics"];
+                };
+            };
+        };
+    };
+    portfolio_overview_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_performance_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_performance_summary_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_positions_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionSummary"][];
+                };
+            };
+        };
+    };
+    portfolio_positions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionCreate"];
+                };
+            };
+        };
+    };
+    portfolio_positions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Position"];
+                };
+            };
+        };
+    };
+    portfolio_positions_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Position"];
+                };
+            };
+        };
+    };
+    portfolio_positions_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_positions_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPositionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Position"];
+                };
+            };
+        };
+    };
+    portfolio_positions_performance_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Position"];
+                };
+            };
+        };
+    };
+    portfolio_positions_update_price_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Position"];
+                };
+            };
+        };
+    };
+    portfolio_positions_allocation_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Position"];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioSnapshotSummary"][];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortfolioSnapshotRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioSnapshot"];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                snapshot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioSnapshot"];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                snapshot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortfolioSnapshotRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioSnapshot"];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                snapshot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_snapshots_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                snapshot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPortfolioSnapshotRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioSnapshot"];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_delete_snapshot_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                snapshot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portfolio_snapshots_chart_data_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioSnapshot"];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_create_snapshot_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SnapshotCreateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotCreate"];
+                };
+            };
+        };
+    };
+    portfolio_snapshots_latest_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioSnapshot"];
                 };
             };
         };

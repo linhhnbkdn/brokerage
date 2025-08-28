@@ -1,50 +1,83 @@
 sequenceDiagram
-    participant FE as Frontend
+    participant FE as React Frontend
+    participant SCHEMA as OpenAPI Schema
     participant API as Django API
     participant DB as Database
     participant EXT as External Data Provider
 
-    Note over FE, EXT: Portfolio Performance System
+    Note over FE, EXT: Portfolio Performance System - Frontend Integration
 
-    Note over FE, API: 1. Current Portfolio Overview
-    FE->>+API: GET /api/portfolio/overview
-    Note right of FE: Authorization: Bearer access_token
-    
-    API->>API: validate_access_token()
-    API->>DB: fetch_user_holdings(user_id)
-    API->>EXT: get_current_market_prices(symbols)
-    Note right of API: Real-time price data for holdings
-    
-    API->>API: calculate_current_values()
-    Note right of API: Calculate current market value<br/>Calculate total gain/loss<br/>Calculate percentage changes
-    
-    API-->>-FE: 200 OK
-    Note left of API: total_value: 125000.50<br/>total_cost_basis: 120000.00<br/>total_gain_loss: 5000.50<br/>total_gain_loss_percent: 4.17<br/>holdings: [...]
+    rect rgb(240, 248, 255)
+        Note over FE, SCHEMA: Frontend Integration Flow<br/>• Schema-driven API client generation<br/>• TypeScript type safety<br/>• Automatic validation<br/>• Consistent error handling
+    end
 
-    Note over FE, API: 2. Historical Performance Data
-    FE->>+API: GET /api/portfolio/performance?period=1M
-    Note right of FE: Request 1 month performance data
+    Note over FE, API: 1. Portfolio Overview Dashboard
+    FE->>FE: generateApiClient(schema.yml)
+    Note right of FE: Auto-generate TypeScript client<br/>from OpenAPI schema
     
-    API->>DB: fetch_portfolio_snapshots(user_id, period)
-    Note right of API: Get daily portfolio snapshots<br/>Calculate performance metrics
+    FE->>+API: GET /api/portfolio/overview/
+    Note right of FE: Authorization: Bearer <JWT_TOKEN><br/>Content-Type: application/json
     
-    API->>API: calculate_performance_metrics()
-    Note right of API: Calculate returns, volatility<br/>Benchmark comparisons
+    API->>API: authenticate_jwt_token()
+    API->>DB: query_user_positions(user_id)
+    API->>EXT: fetch_current_prices(symbols[])
+    Note right of API: Via DI Container:<br/>MarketDataProvider.get_multiple_prices()
     
-    API-->>-FE: 200 OK
-    Note left of API: period: 1M<br/>snapshots: [...]<br/>metrics: [...]
+    API->>API: calculate_portfolio_metrics()
+    Note right of API: • total_portfolio_value<br/>• cash_balance<br/>• day_gain_loss<br/>• total_gain_loss_percent<br/>• asset_allocation<br/>• top_positions[]
+    
+    API-->>-FE: PortfolioOverviewResponse
+    Note left of API: {<br/>  "total_value": "125000.50",<br/>  "cash_balance": "5000.00",<br/>  "total_portfolio_value": "130000.50",<br/>  "day_gain_loss": "1250.00",<br/>  "asset_allocation": {...},<br/>  "top_positions": [...]<br/>}
 
-    Note over FE, API: 3. Individual Asset Performance
-    FE->>+API: GET /api/portfolio/holdings/:id/performance
+    Note over FE, API: 2. Performance Analytics
+    FE->>+API: GET /api/portfolio/performance/?period=1M
+    Note right of FE: Request typed performance data<br/>with period validation
     
-    API->>DB: fetch_position_history(position_id)
-    API->>EXT: get_price_history(symbol, period)
+    API->>DB: fetch_portfolio_snapshots(user, period)
+    API->>DB: fetch_performance_metrics(user, period)
     
-    API->>API: calculate_position_performance()
-    Note right of API: Calculate individual asset returns<br/>Compare to market/benchmark
+    API->>API: calculate_time_series_data()
+    Note right of API: • historical snapshots<br/>• volatility calculation<br/>• sharpe ratio<br/>• benchmark comparison<br/>• drawdown analysis
     
-    API-->>-FE: 200 OK
-    Note left of API: Position performance data
+    API-->>-FE: PortfolioPerformanceResponse
+    Note left of API: {<br/>  "period": "1M",<br/>  "total_return": "5.25",<br/>  "volatility": "15.25",<br/>  "sharpe_ratio": "0.85",<br/>  "snapshots": [...],<br/>  "benchmark_comparison": {...}<br/>}
+
+    Note over FE, API: 3. Position Management
+    FE->>+API: GET /api/portfolio/positions/
+    Note right of FE: Fetch all user positions<br/>with calculated fields
+    
+    API->>DB: query_positions_with_calculations()
+    API->>EXT: batch_price_update(symbols)
+    
+    API-->>-FE: Position[]
+    Note left of API: [{<br/>  "position_id": "uuid",<br/>  "symbol": "AAPL",<br/>  "quantity": "100.00",<br/>  "current_price": "150.25",<br/>  "unrealized_gain_loss": "1025.00",<br/>  "is_profitable": true<br/>}, ...]
+
+    FE->>+API: POST /api/portfolio/positions/
+    Note right of FE: Create new position<br/>with validated data
+    
+    API->>DB: create_position(validated_data)
+    API->>EXT: get_current_price(symbol)
+    
+    API-->>-FE: PositionResponse
+    Note left of API: Created position with<br/>real-time price data
+
+    Note over FE, API: 4. Snapshot & Metrics
+    FE->>+API: POST /api/portfolio/snapshots/create_snapshot/
+    Note right of FE: Trigger daily snapshot creation
+    
+    API->>DB: create_portfolio_snapshot()
+    API->>EXT: fetch_all_current_prices()
+    
+    API-->>-FE: SnapshotResponse
+
+    FE->>+API: GET /api/portfolio/snapshots/chart_data/?period=6M
+    Note right of FE: Get chart data for visualization
+    
+    API->>DB: fetch_snapshots_for_period()
+    API->>API: format_chart_data()
+    
+    API-->>-FE: ChartDataResponse
+    Note left of API: Optimized data for charts:<br/>date-value pairs
 
     rect rgb(240, 248, 255)
         Note over API, DB: Core Models & Data Structure<br/>• Position (holdings)<br/>• PortfolioSnapshot (daily values)<br/>• Transaction (buy/sell history)<br/>• PerformanceMetrics (calculated stats)<br/>• UserBalance (cash positions)
@@ -53,3 +86,140 @@ sequenceDiagram
     rect rgb(248, 255, 240)
         Note over API: Performance Calculations<br/>• Total Return = (Current Value - Cost Basis) / Cost Basis<br/>• Time-Weighted Return (daily snapshots)<br/>• Volatility (standard deviation of returns)<br/>• Sharpe Ratio (risk-adjusted returns)<br/>• Alpha/Beta vs S&P 500 benchmark
     end
+
+---
+
+flowchart TB
+    subgraph "Frontend (React Router v7)"
+        FE_APP[Portfolio App]
+        SCHEMA_GEN[OpenAPI Client Generator]
+        TS_TYPES[TypeScript Types]
+        API_CLIENT[API Client]
+        
+        FE_APP --> SCHEMA_GEN
+        SCHEMA_GEN --> TS_TYPES
+        SCHEMA_GEN --> API_CLIENT
+    end
+
+    subgraph "Backend Schema"
+        OPENAPI[schema.yml]
+        SPECTACULAR[Django Spectacular]
+        
+        SPECTACULAR --> OPENAPI
+    end
+
+    subgraph "Django Backend API"
+        subgraph "Portfolio Endpoints"
+            OVERVIEW["/api/portfolio/overview/"]
+            PERFORMANCE["/api/portfolio/performance/"]
+            POSITIONS["/api/portfolio/positions/"]
+            SNAPSHOTS["/api/portfolio/snapshots/"]
+            METRICS["/api/portfolio/metrics/"]
+        end
+        
+        subgraph "Auth & Security"
+            JWT_AUTH[JWT Authentication]
+            PERMISSIONS[User Permissions]
+        end
+        
+        subgraph "Data Layer"
+            SERIALIZERS[DRF Serializers]
+            MODELS[Django Models]
+            DATABASE[(SQLite/PostgreSQL)]
+        end
+        
+        subgraph "External Services"
+            DI_CONTAINER[DI Container]
+            MARKET_DATA[Market Data Provider]
+            BENCHMARKS[Benchmark Provider]
+        end
+    end
+
+    OPENAPI -.-> SCHEMA_GEN
+    API_CLIENT --> OVERVIEW
+    API_CLIENT --> PERFORMANCE
+    API_CLIENT --> POSITIONS
+    API_CLIENT --> SNAPSHOTS
+    API_CLIENT --> METRICS
+    
+    OVERVIEW --> JWT_AUTH
+    PERFORMANCE --> JWT_AUTH
+    POSITIONS --> JWT_AUTH
+    SNAPSHOTS --> JWT_AUTH
+    METRICS --> JWT_AUTH
+    
+    JWT_AUTH --> PERMISSIONS
+    PERMISSIONS --> SERIALIZERS
+    SERIALIZERS --> MODELS
+    MODELS --> DATABASE
+    
+    OVERVIEW --> DI_CONTAINER
+    PERFORMANCE --> DI_CONTAINER
+    DI_CONTAINER --> MARKET_DATA
+    DI_CONTAINER --> BENCHMARKS
+
+---
+
+graph TD
+    subgraph "API Endpoints Schema"
+        subgraph "Portfolio Management"
+            A1[GET /api/portfolio/overview/]
+            A2[GET /api/portfolio/performance/?period=1M]
+            A3[GET /api/portfolio/performance/summary/]
+        end
+        
+        subgraph "Position Operations"
+            B1[GET /api/portfolio/positions/]
+            B2[POST /api/portfolio/positions/]
+            B3[GET /api/portfolio/positions/{id}/]
+            B4[PUT /api/portfolio/positions/{id}/]
+            B5[DELETE /api/portfolio/positions/{id}/]
+            B6[POST /api/portfolio/positions/{id}/update_price/]
+            B7[GET /api/portfolio/positions/allocation/]
+        end
+        
+        subgraph "Snapshots & History"
+            C1[GET /api/portfolio/snapshots/]
+            C2[POST /api/portfolio/snapshots/]
+            C3[GET /api/portfolio/snapshots/{id}/]
+            C4[POST /api/portfolio/snapshots/create_snapshot/]
+            C5[GET /api/portfolio/snapshots/chart_data/]
+            C6[GET /api/portfolio/snapshots/latest/]
+        end
+        
+        subgraph "Performance Metrics"
+            D1[GET /api/portfolio/metrics/]
+            D2[POST /api/portfolio/metrics/]
+            D3[GET /api/portfolio/metrics/{id}/]
+            D4[POST /api/portfolio/metrics/calculate/]
+            D5[GET /api/portfolio/metrics/compare/]
+            D6[GET /api/portfolio/metrics/summary/]
+        end
+        
+        subgraph "Authentication"
+            E1[POST /api/auth/login/]
+            E2[POST /api/auth/logout/]
+            E3[POST /api/auth/refresh/]
+            E4[GET /api/auth/protected/]
+        end
+    end
+
+    subgraph "Schema Components"
+        F1[Position Schema]
+        F2[PortfolioSnapshot Schema]
+        F3[PerformanceMetrics Schema]
+        F4[PortfolioOverview Schema]
+        F5[PortfolioPerformance Schema]
+    end
+
+    A1 --> F4
+    A2 --> F5
+    B1 --> F1
+    B2 --> F1
+    B3 --> F1
+    C1 --> F2
+    C2 --> F2
+    C3 --> F2
+    D1 --> F3
+    D2 --> F3
+    D3 --> F3

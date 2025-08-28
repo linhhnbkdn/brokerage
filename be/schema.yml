@@ -271,7 +271,1659 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/portfolio/metrics/:
+    get:
+      operationId: portfolio_metrics_list
+      description: |-
+        GET /api/portfolio/metrics/
+        List performance metrics with optional period filtering
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PerformanceMetricsSummary'
+          description: ''
+    post:
+      operationId: portfolio_metrics_create
+      description: Performance metrics operations
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerformanceMetricsRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+          description: ''
+  /api/portfolio/metrics/{metrics_id}/:
+    get:
+      operationId: portfolio_metrics_retrieve
+      description: |-
+        GET /api/portfolio/metrics/{metrics_id}/
+        Get detailed metrics information
+      parameters:
+      - in: path
+        name: metrics_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for metrics record
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+          description: ''
+    put:
+      operationId: portfolio_metrics_update
+      description: Performance metrics operations
+      parameters:
+      - in: path
+        name: metrics_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for metrics record
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerformanceMetricsRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+          description: ''
+    patch:
+      operationId: portfolio_metrics_partial_update
+      description: Performance metrics operations
+      parameters:
+      - in: path
+        name: metrics_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for metrics record
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPerformanceMetricsRequest'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+          description: ''
+    delete:
+      operationId: portfolio_metrics_destroy
+      description: Performance metrics operations
+      parameters:
+      - in: path
+        name: metrics_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for metrics record
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/portfolio/metrics/calculate/:
+    post:
+      operationId: portfolio_metrics_calculate_create
+      description: |-
+        POST /api/portfolio/metrics/calculate/
+        Calculate performance metrics for a specified period
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetricsCalculationRequestRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsCalculationRequest'
+          description: ''
+  /api/portfolio/metrics/compare/:
+    get:
+      operationId: portfolio_metrics_compare_retrieve
+      description: |-
+        GET /api/portfolio/metrics/compare/?periods=1M,3M,6M,1Y
+        Compare performance metrics across multiple periods
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+          description: ''
+  /api/portfolio/metrics/summary/:
+    get:
+      operationId: portfolio_metrics_summary_retrieve
+      description: |-
+        GET /api/portfolio/metrics/summary/
+        Get performance metrics summary for all periods
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+          description: ''
+  /api/portfolio/overview/:
+    get:
+      operationId: portfolio_overview_retrieve
+      description: |-
+        GET /api/portfolio/overview/
+        Get current portfolio overview with positions and performance
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/portfolio/performance/:
+    get:
+      operationId: portfolio_performance_retrieve
+      description: |-
+        GET /api/portfolio/performance/?period=1M
+        Get portfolio performance data for specified period
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/portfolio/performance/summary/:
+    get:
+      operationId: portfolio_performance_summary_retrieve
+      description: |-
+        GET /api/portfolio/performance/summary/
+        Get quick performance summary for dashboard
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/portfolio/positions/:
+    get:
+      operationId: portfolio_positions_list
+      description: |-
+        GET /api/portfolio/positions/
+        List user's portfolio positions
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionSummary'
+          description: ''
+    post:
+      operationId: portfolio_positions_create
+      description: |-
+        POST /api/portfolio/positions/
+        Create a new position
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PositionCreateRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PositionCreate'
+          description: ''
+  /api/portfolio/positions/{position_id}/:
+    get:
+      operationId: portfolio_positions_retrieve
+      description: |-
+        GET /api/portfolio/positions/{position_id}/
+        Get detailed position information
+      parameters:
+      - in: path
+        name: position_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for position tracking
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+    put:
+      operationId: portfolio_positions_update
+      description: |-
+        PUT /api/portfolio/positions/{position_id}/
+        Update position (mainly for adjusting cost basis, quantity)
+      parameters:
+      - in: path
+        name: position_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for position tracking
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PositionRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+    patch:
+      operationId: portfolio_positions_partial_update
+      description: Position CRUD operations
+      parameters:
+      - in: path
+        name: position_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for position tracking
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPositionRequest'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+    delete:
+      operationId: portfolio_positions_destroy
+      description: |-
+        DELETE /api/portfolio/positions/{position_id}/
+        Close/delete a position
+      parameters:
+      - in: path
+        name: position_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for position tracking
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/portfolio/positions/{position_id}/performance/:
+    get:
+      operationId: portfolio_positions_performance_retrieve
+      description: |-
+        GET /api/portfolio/positions/{position_id}/performance/
+        Get individual position performance data
+      parameters:
+      - in: path
+        name: position_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for position tracking
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+  /api/portfolio/positions/{position_id}/update_price/:
+    post:
+      operationId: portfolio_positions_update_price_create
+      description: |-
+        POST /api/portfolio/positions/{position_id}/update_price/
+        Update current market price for a position
+      parameters:
+      - in: path
+        name: position_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for position tracking
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PositionRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+  /api/portfolio/positions/allocation/:
+    get:
+      operationId: portfolio_positions_allocation_retrieve
+      description: |-
+        GET /api/portfolio/positions/allocation/
+        Get portfolio allocation breakdown
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+  /api/portfolio/snapshots/:
+    get:
+      operationId: portfolio_snapshots_list
+      description: |-
+        GET /api/portfolio/snapshots/
+        List portfolio snapshots with optional date filtering
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioSnapshotSummary'
+          description: ''
+    post:
+      operationId: portfolio_snapshots_create
+      description: Portfolio snapshot operations
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortfolioSnapshotRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSnapshot'
+          description: ''
+  /api/portfolio/snapshots/{snapshot_id}/:
+    get:
+      operationId: portfolio_snapshots_retrieve
+      description: |-
+        GET /api/portfolio/snapshots/{snapshot_id}/
+        Get detailed snapshot information
+      parameters:
+      - in: path
+        name: snapshot_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for snapshot
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSnapshot'
+          description: ''
+    put:
+      operationId: portfolio_snapshots_update
+      description: Portfolio snapshot operations
+      parameters:
+      - in: path
+        name: snapshot_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for snapshot
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortfolioSnapshotRequest'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSnapshot'
+          description: ''
+    patch:
+      operationId: portfolio_snapshots_partial_update
+      description: Portfolio snapshot operations
+      parameters:
+      - in: path
+        name: snapshot_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for snapshot
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPortfolioSnapshotRequest'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSnapshot'
+          description: ''
+    delete:
+      operationId: portfolio_snapshots_destroy
+      description: Portfolio snapshot operations
+      parameters:
+      - in: path
+        name: snapshot_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for snapshot
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/portfolio/snapshots/{snapshot_id}/delete_snapshot/:
+    delete:
+      operationId: portfolio_snapshots_delete_snapshot_destroy
+      description: |-
+        DELETE /api/portfolio/snapshots/{snapshot_id}/delete_snapshot/
+        Delete a specific snapshot
+      parameters:
+      - in: path
+        name: snapshot_id
+        schema:
+          type: string
+          format: uuid
+          description: Unique identifier for snapshot
+        required: true
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/portfolio/snapshots/chart_data/:
+    get:
+      operationId: portfolio_snapshots_chart_data_retrieve
+      description: |-
+        GET /api/portfolio/snapshots/chart_data/?period=1M
+        Get simplified snapshot data for charting
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSnapshot'
+          description: ''
+  /api/portfolio/snapshots/create_snapshot/:
+    post:
+      operationId: portfolio_snapshots_create_snapshot_create
+      description: |-
+        POST /api/portfolio/snapshots/create_snapshot/
+        Create a new portfolio snapshot
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnapshotCreateRequest'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotCreate'
+          description: ''
+  /api/portfolio/snapshots/latest/:
+    get:
+      operationId: portfolio_snapshots_latest_retrieve
+      description: |-
+        GET /api/portfolio/snapshots/latest/
+        Get the most recent portfolio snapshot
+      tags:
+      - portfolio
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSnapshot'
+          description: ''
 components:
+  schemas:
+    InstrumentTypeEnum:
+      enum:
+      - stock
+      - bond
+      - crypto
+      - etf
+      - mutual_fund
+      - option
+      - future
+      type: string
+      description: |-
+        * `stock` - Stock
+        * `bond` - Bond
+        * `crypto` - Cryptocurrency
+        * `etf` - Exchange Traded Fund
+        * `mutual_fund` - Mutual Fund
+        * `option` - Option
+        * `future` - Future
+    MetricsCalculationRequest:
+      type: object
+      description: Serializer for requesting metrics calculation
+      properties:
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        force_recalculate:
+          type: boolean
+          default: false
+        include_benchmark:
+          type: boolean
+          default: true
+        benchmark_symbol:
+          type: string
+          default: SPY
+          description: 'Benchmark symbol (default: SPY for S&P 500)'
+          maxLength: 10
+      required:
+      - period
+    MetricsCalculationRequestRequest:
+      type: object
+      description: Serializer for requesting metrics calculation
+      properties:
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        force_recalculate:
+          type: boolean
+          default: false
+        include_benchmark:
+          type: boolean
+          default: true
+        benchmark_symbol:
+          type: string
+          minLength: 1
+          default: SPY
+          description: 'Benchmark symbol (default: SPY for S&P 500)'
+          maxLength: 10
+      required:
+      - period
+    PatchedPerformanceMetricsRequest:
+      type: object
+      description: Performance metrics serializer
+      properties:
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total return percentage for period
+        annualized_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Annualized return percentage
+        time_weighted_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Time-weighted return percentage
+        volatility:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Portfolio volatility (standard deviation)
+        sharpe_ratio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Risk-adjusted return ratio
+        max_drawdown:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Maximum drawdown percentage
+        benchmark_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Benchmark return for same period
+        alpha:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Alpha vs benchmark
+        beta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Beta vs benchmark
+        starting_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Portfolio value at start of period
+        ending_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Portfolio value at end of period
+        peak_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          nullable: true
+          description: Peak portfolio value during period
+        trading_days:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Number of trading days in period
+        number_of_trades:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Number of trades executed in period
+        calculation_notes:
+          type: string
+          nullable: true
+          description: Notes about calculation methodology
+    PatchedPortfolioSnapshotRequest:
+      type: object
+      description: Portfolio snapshot serializer
+      properties:
+        snapshot_date:
+          type: string
+          format: date
+        total_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Total portfolio market value
+        cash_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Cash available in account
+        total_cost_basis:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Total cost basis of all positions
+        day_gain_loss:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Gain/loss for the day
+        day_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Daily gain/loss percentage
+        total_gain_loss:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Total unrealized gain/loss
+        total_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total gain/loss percentage
+        holdings_data:
+          description: Detailed holdings data for this snapshot
+        market_indexes:
+          description: Market index values for comparison
+    PatchedPositionRequest:
+      type: object
+      description: Detailed Position serializer
+      properties:
+        symbol:
+          type: string
+          minLength: 1
+          maxLength: 20
+        instrument_type:
+          $ref: '#/components/schemas/InstrumentTypeEnum'
+        name:
+          type: string
+          minLength: 1
+          description: Full name of the instrument
+          maxLength: 255
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,8})?$
+          description: Current quantity held
+        average_cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Average cost basis per share/unit
+        current_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Latest market price
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        total_dividends:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+    PerformanceMetrics:
+      type: object
+      description: Performance metrics serializer
+      properties:
+        metrics_id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique identifier for metrics record
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        period_display:
+          type: string
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        calculated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        total_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total return percentage for period
+        annualized_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Annualized return percentage
+        time_weighted_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Time-weighted return percentage
+        volatility:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Portfolio volatility (standard deviation)
+        sharpe_ratio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Risk-adjusted return ratio
+        max_drawdown:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Maximum drawdown percentage
+        benchmark_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Benchmark return for same period
+        alpha:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Alpha vs benchmark
+        beta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Beta vs benchmark
+        starting_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Portfolio value at start of period
+        ending_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Portfolio value at end of period
+        peak_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          nullable: true
+          description: Peak portfolio value during period
+        trading_days:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Number of trading days in period
+        number_of_trades:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Number of trades executed in period
+        outperformed_benchmark:
+          type: string
+          readOnly: true
+        is_profitable:
+          type: string
+          readOnly: true
+        risk_adjusted_return:
+          type: string
+          readOnly: true
+        calculation_notes:
+          type: string
+          nullable: true
+          description: Notes about calculation methodology
+      required:
+      - calculated_at
+      - end_date
+      - ending_value
+      - is_profitable
+      - metrics_id
+      - outperformed_benchmark
+      - period
+      - period_display
+      - risk_adjusted_return
+      - start_date
+      - starting_value
+      - total_return
+    PerformanceMetricsRequest:
+      type: object
+      description: Performance metrics serializer
+      properties:
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total return percentage for period
+        annualized_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Annualized return percentage
+        time_weighted_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Time-weighted return percentage
+        volatility:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Portfolio volatility (standard deviation)
+        sharpe_ratio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Risk-adjusted return ratio
+        max_drawdown:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Maximum drawdown percentage
+        benchmark_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Benchmark return for same period
+        alpha:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Alpha vs benchmark
+        beta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Beta vs benchmark
+        starting_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Portfolio value at start of period
+        ending_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Portfolio value at end of period
+        peak_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          nullable: true
+          description: Peak portfolio value during period
+        trading_days:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Number of trading days in period
+        number_of_trades:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Number of trades executed in period
+        calculation_notes:
+          type: string
+          nullable: true
+          description: Notes about calculation methodology
+      required:
+      - end_date
+      - ending_value
+      - period
+      - start_date
+      - starting_value
+      - total_return
+    PerformanceMetricsSummary:
+      type: object
+      description: Lightweight metrics serializer for overview displays
+      properties:
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        period_display:
+          type: string
+          readOnly: true
+        total_return:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total return percentage for period
+        volatility:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Portfolio volatility (standard deviation)
+        sharpe_ratio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          nullable: true
+          description: Risk-adjusted return ratio
+        is_profitable:
+          type: string
+          readOnly: true
+        calculated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - calculated_at
+      - is_profitable
+      - period
+      - period_display
+      - total_return
+    PeriodEnum:
+      enum:
+      - 1D
+      - 1W
+      - 1M
+      - 3M
+      - 6M
+      - 1Y
+      - 3Y
+      - 5Y
+      - ALL
+      type: string
+      description: |-
+        * `1D` - 1 Day
+        * `1W` - 1 Week
+        * `1M` - 1 Month
+        * `3M` - 3 Months
+        * `6M` - 6 Months
+        * `1Y` - 1 Year
+        * `3Y` - 3 Years
+        * `5Y` - 5 Years
+        * `ALL` - All Time
+    PortfolioSnapshot:
+      type: object
+      description: Portfolio snapshot serializer
+      properties:
+        snapshot_id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique identifier for snapshot
+        snapshot_date:
+          type: string
+          format: date
+        snapshot_time:
+          type: string
+          format: date-time
+          readOnly: true
+        total_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Total portfolio market value
+        cash_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Cash available in account
+        total_portfolio_value:
+          type: string
+          readOnly: true
+        total_cost_basis:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Total cost basis of all positions
+        day_gain_loss:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Gain/loss for the day
+        day_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Daily gain/loss percentage
+        total_gain_loss:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Total unrealized gain/loss
+        total_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total gain/loss percentage
+        cash_allocation_percent:
+          type: string
+          readOnly: true
+        holdings_data:
+          description: Detailed holdings data for this snapshot
+        market_indexes:
+          description: Market index values for comparison
+        holdings_count:
+          type: string
+          readOnly: true
+        is_profitable:
+          type: string
+          readOnly: true
+      required:
+      - cash_allocation_percent
+      - cash_balance
+      - holdings_count
+      - is_profitable
+      - snapshot_date
+      - snapshot_id
+      - snapshot_time
+      - total_cost_basis
+      - total_portfolio_value
+      - total_value
+    PortfolioSnapshotRequest:
+      type: object
+      description: Portfolio snapshot serializer
+      properties:
+        snapshot_date:
+          type: string
+          format: date
+        total_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Total portfolio market value
+        cash_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Cash available in account
+        total_cost_basis:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Total cost basis of all positions
+        day_gain_loss:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Gain/loss for the day
+        day_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Daily gain/loss percentage
+        total_gain_loss:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Total unrealized gain/loss
+        total_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total gain/loss percentage
+        holdings_data:
+          description: Detailed holdings data for this snapshot
+        market_indexes:
+          description: Market index values for comparison
+      required:
+      - cash_balance
+      - snapshot_date
+      - total_cost_basis
+      - total_value
+    PortfolioSnapshotSummary:
+      type: object
+      description: Lightweight snapshot serializer for time series data
+      properties:
+        snapshot_date:
+          type: string
+          format: date
+        total_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,16}(?:\.\d{0,2})?$
+          description: Total portfolio market value
+        cash_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Cash available in account
+        total_portfolio_value:
+          type: string
+          readOnly: true
+        day_gain_loss:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          description: Gain/loss for the day
+        day_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Daily gain/loss percentage
+        total_gain_loss_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,4})?$
+          description: Total gain/loss percentage
+      required:
+      - cash_balance
+      - snapshot_date
+      - total_portfolio_value
+      - total_value
+    Position:
+      type: object
+      description: Detailed Position serializer
+      properties:
+        position_id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique identifier for position tracking
+        symbol:
+          type: string
+          maxLength: 20
+        instrument_type:
+          $ref: '#/components/schemas/InstrumentTypeEnum'
+        name:
+          type: string
+          description: Full name of the instrument
+          maxLength: 255
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,8})?$
+          description: Current quantity held
+        average_cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Average cost basis per share/unit
+        current_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Latest market price
+        cost_basis:
+          type: string
+          readOnly: true
+        current_value:
+          type: string
+          readOnly: true
+        unrealized_gain_loss:
+          type: string
+          readOnly: true
+        unrealized_gain_loss_percent:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        opened_at:
+          type: string
+          format: date-time
+          readOnly: true
+        closed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        last_price_update:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        total_dividends:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        is_profitable:
+          type: string
+          readOnly: true
+      required:
+      - average_cost
+      - closed_at
+      - cost_basis
+      - current_value
+      - instrument_type
+      - is_profitable
+      - last_price_update
+      - name
+      - opened_at
+      - position_id
+      - quantity
+      - symbol
+      - unrealized_gain_loss
+      - unrealized_gain_loss_percent
+    PositionCreate:
+      type: object
+      description: Serializer for creating new positions
+      properties:
+        symbol:
+          type: string
+          maxLength: 20
+        instrument_type:
+          $ref: '#/components/schemas/InstrumentTypeEnum'
+        name:
+          type: string
+          description: Full name of the instrument
+          maxLength: 255
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,8})?$
+          description: Current quantity held
+        average_cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Average cost basis per share/unit
+      required:
+      - average_cost
+      - instrument_type
+      - name
+      - quantity
+      - symbol
+    PositionCreateRequest:
+      type: object
+      description: Serializer for creating new positions
+      properties:
+        symbol:
+          type: string
+          minLength: 1
+          maxLength: 20
+        instrument_type:
+          $ref: '#/components/schemas/InstrumentTypeEnum'
+        name:
+          type: string
+          minLength: 1
+          description: Full name of the instrument
+          maxLength: 255
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,8})?$
+          description: Current quantity held
+        average_cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Average cost basis per share/unit
+      required:
+      - average_cost
+      - instrument_type
+      - name
+      - quantity
+      - symbol
+    PositionRequest:
+      type: object
+      description: Detailed Position serializer
+      properties:
+        symbol:
+          type: string
+          minLength: 1
+          maxLength: 20
+        instrument_type:
+          $ref: '#/components/schemas/InstrumentTypeEnum'
+        name:
+          type: string
+          minLength: 1
+          description: Full name of the instrument
+          maxLength: 255
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,8})?$
+          description: Current quantity held
+        average_cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Average cost basis per share/unit
+        current_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Latest market price
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        total_dividends:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - average_cost
+      - instrument_type
+      - name
+      - quantity
+      - symbol
+    PositionSummary:
+      type: object
+      description: Lightweight Position serializer for lists
+      properties:
+        position_id:
+          type: string
+          format: uuid
+          description: Unique identifier for position tracking
+        symbol:
+          type: string
+          maxLength: 20
+        instrument_type:
+          $ref: '#/components/schemas/InstrumentTypeEnum'
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,8})?$
+          description: Current quantity held
+        current_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,4})?$
+          description: Latest market price
+        current_value:
+          type: string
+          readOnly: true
+        unrealized_gain_loss:
+          type: string
+          readOnly: true
+        unrealized_gain_loss_percent:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+      required:
+      - current_value
+      - instrument_type
+      - quantity
+      - symbol
+      - unrealized_gain_loss
+      - unrealized_gain_loss_percent
+    SnapshotCreate:
+      type: object
+      description: Serializer for creating snapshots via API
+      properties:
+        snapshot_date:
+          type: string
+          format: date
+        force_recreate:
+          type: boolean
+          default: false
+    SnapshotCreateRequest:
+      type: object
+      description: Serializer for creating snapshots via API
+      properties:
+        snapshot_date:
+          type: string
+          format: date
+        force_recreate:
+          type: boolean
+          default: false
+    StatusEnum:
+      enum:
+      - active
+      - closed
+      - suspended
+      type: string
+      description: |-
+        * `active` - Active
+        * `closed` - Closed
+        * `suspended` - Suspended
   securitySchemes:
     basicAuth:
       type: http

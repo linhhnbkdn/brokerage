@@ -13,29 +13,51 @@ export const api = createClient<paths>({
   baseUrl: API_BASE_URL,
 });
 
-// Types for convenience (exported from generated types)
-export type LoginRequest =
-  paths["/api/auth/login/"]["post"]["requestBody"]["content"]["application/json"];
-export type LoginResponse =
-  paths["/api/auth/login/"]["post"]["responses"]["200"]["content"]["application/json"];
+// Auth Types (manually defined for better type safety)
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
 
-export type RegisterRequest =
-  paths["/api/auth/register/"]["post"]["requestBody"]["content"]["application/json"];
-export type RegisterResponse =
-  paths["/api/auth/register/"]["post"]["responses"]["201"]["content"]["application/json"];
+export interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
+}
 
-export type RefreshRequest =
-  paths["/api/auth/refresh/"]["post"]["requestBody"]["content"]["application/json"];
-export type RefreshResponse =
-  paths["/api/auth/refresh/"]["post"]["responses"]["200"]["content"]["application/json"];
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
 
-export type LogoutRequest =
-  paths["/api/auth/logout/"]["post"]["requestBody"]["content"]["application/json"];
-export type LogoutResponse =
-  paths["/api/auth/logout/"]["post"]["responses"]["200"]["content"]["application/json"];
+export interface RegisterResponse {
+  access_token: string;
+  refresh_token: string;
+}
 
-export type ProtectedResponse =
-  paths["/api/auth/protected/"]["get"]["responses"]["200"]["content"]["application/json"];
+export interface RefreshRequest {
+  refresh_token: string;
+}
+
+export interface RefreshResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
+export interface LogoutRequest {
+  refresh_token: string;
+}
+
+export interface LogoutResponse {
+  message: string;
+}
+
+export interface ProtectedResponse {
+  message: string;
+  user_id: number;
+  email: string;
+}
 
 // Authentication token management
 export interface AuthTokens {
@@ -248,7 +270,7 @@ export async function refreshAccessToken(): Promise<boolean> {
     }
 
     console.log("✅ Token refreshed successfully");
-    storeTokens(data);
+    storeTokens(data as AuthTokens);
     return true;
   } catch (error) {
     console.error("❌ Token refresh error:", error);
@@ -310,12 +332,20 @@ export async function logout(): Promise<void> {
  * Get current user information (requires authentication)
  */
 export async function getCurrentUser(): Promise<ProtectedResponse> {
-  const { data, error } = await api.GET("/api/auth/protected/");
+  const response = await fetch(API_BASE_URL + "/api/auth/protected/", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getAccessToken()}`,
+      "Origin": window.location.origin,
+    },
+  });
 
-  if (error || !data) {
-    throw new Error(error?.error || "Failed to get user info");
+  if (!response.ok) {
+    throw new Error("Failed to get user info");
   }
 
+  const data = await response.json();
   return data;
 }
 
@@ -576,6 +606,569 @@ export function initializeApiClient() {
       }
     }, 10 * 60 * 1000); // Every 10 minutes
   }
+}
+
+// Portfolio API Types (manually defined based on schema for better type safety)
+export interface PortfolioOverviewResponse {
+  total_value: string;
+  cash_balance: string;
+  total_portfolio_value: string;
+  total_cost_basis: string;
+  total_gain_loss: string;
+  total_gain_loss_percent: string;
+  day_gain_loss: string;
+  day_gain_loss_percent: string;
+  positions_count: number;
+  last_updated: string;
+  asset_allocation: Record<string, any>;
+  top_positions: Array<any>;
+}
+
+export interface PortfolioPerformanceResponse {
+  period: string;
+  period_display: string;
+  start_date: string;
+  end_date: string;
+  total_return: string;
+  annualized_return?: string;
+  volatility?: string;
+  sharpe_ratio?: string;
+  max_drawdown?: string;
+  benchmark_return?: string;
+  alpha?: string;
+  beta?: string;
+  outperformed_benchmark: boolean;
+  starting_value: string;
+  ending_value: string;
+  peak_value?: string;
+  is_profitable: boolean;
+  trading_days: number;
+  snapshots: Array<any>;
+}
+
+export interface Position {
+  position_id: string;
+  symbol: string;
+  instrument_type: string;
+  name: string;
+  quantity: string;
+  average_cost: string;
+  current_price?: string;
+  cost_basis: string;
+  current_value: string;
+  unrealized_gain_loss: string;
+  unrealized_gain_loss_percent: string;
+  status: string;
+  opened_at: string;
+  is_profitable: boolean;
+}
+
+export interface PositionCreateRequest {
+  symbol: string;
+  instrument_type: "stock" | "bond" | "crypto" | "etf" | "mutual_fund" | "option" | "future";
+  name: string;
+  quantity: string;
+  average_cost: string;
+}
+
+export interface PortfolioSnapshot {
+  snapshot_id: string;
+  snapshot_date: string;
+  snapshot_time: string;
+  total_value: string;
+  cash_balance: string;
+  total_portfolio_value: string;
+  total_cost_basis: string;
+  day_gain_loss: string;
+  day_gain_loss_percent: string;
+  total_gain_loss: string;
+  total_gain_loss_percent: string;
+  cash_allocation_percent: string;
+  holdings_data: Record<string, any>;
+  holdings_count: number;
+  is_profitable: boolean;
+}
+
+export interface PerformanceMetrics {
+  metrics_id: string;
+  period: string;
+  period_display: string;
+  start_date: string;
+  end_date: string;
+  calculated_at: string;
+  total_return: string;
+  annualized_return?: string;
+  volatility?: string;
+  sharpe_ratio?: string;
+  max_drawdown?: string;
+  benchmark_return?: string;
+  alpha?: string;
+  beta?: string;
+  starting_value: string;
+  ending_value: string;
+  outperformed_benchmark: boolean;
+  is_profitable: boolean;
+  risk_adjusted_return?: string;
+}
+
+export interface MetricsCalculationRequest {
+  period: "1D" | "1W" | "1M" | "3M" | "6M" | "1Y" | "3Y" | "5Y" | "ALL";
+  force_recalculate?: boolean;
+  include_benchmark?: boolean;
+  benchmark_symbol?: string;
+}
+
+export interface SnapshotCreateRequest {
+  snapshot_date?: string;
+  force_recreate?: boolean;
+}
+
+/**
+ * PORTFOLIO API FUNCTIONS
+ */
+
+/**
+ * Get portfolio overview with positions and performance
+ */
+export async function getPortfolioOverview(): Promise<PortfolioOverviewResponse> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting portfolio overview...');
+    
+    const response = await fetch(API_BASE_URL + "/api/portfolio/overview/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch portfolio overview') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Portfolio overview fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get portfolio performance data for specified period
+ */
+export async function getPortfolioPerformance(period?: string): Promise<PortfolioPerformanceResponse> {
+  return makeAuthenticatedRequest(async () => {
+    console.log(`🔄 Getting portfolio performance for period: ${period || 'default'}`);
+    
+    const url = API_BASE_URL + "/api/portfolio/performance/" + (period ? `?period=${period}` : '');
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch portfolio performance') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Portfolio performance fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get quick performance summary for dashboard
+ */
+export async function getPortfolioPerformanceSummary(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting portfolio performance summary...');
+    
+    const { data, error } = await api.GET("/api/portfolio/performance/summary/", {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to fetch portfolio performance summary");
+    }
+
+    console.log('✅ Portfolio performance summary fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get all user positions
+ */
+export async function getPositions(): Promise<any[]> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting portfolio positions...');
+    
+    const response = await fetch(API_BASE_URL + "/api/portfolio/positions/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch positions') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Portfolio positions fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Create a new position
+ */
+export async function createPosition(positionData: PositionCreateRequest): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Creating new position...', positionData);
+    
+    const response = await fetch(API_BASE_URL + "/api/portfolio/positions/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+      body: JSON.stringify(positionData),
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to create position') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Position created successfully');
+    return data;
+  });
+}
+
+/**
+ * Get detailed position information
+ */
+export async function getPosition(positionId: string): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log(`🔄 Getting position ${positionId}...`);
+    
+    const response = await fetch(API_BASE_URL + `/api/portfolio/positions/${positionId}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to fetch position details') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Position details fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Update position price
+ */
+export async function updatePositionPrice(
+  positionId: string, 
+  newPrice: number
+): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log(`🔄 Updating price for position ${positionId} to ${newPrice}...`);
+    
+    const response = await fetch(API_BASE_URL + `/api/portfolio/positions/${positionId}/update_price/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+      body: JSON.stringify({ current_price: newPrice.toString() }),
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to update position price') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Position price updated successfully');
+    return data;
+  });
+}
+
+/**
+ * Delete/close a position
+ */
+export async function deletePosition(positionId: string): Promise<void> {
+  return makeAuthenticatedRequest(async () => {
+    console.log(`🔄 Deleting position ${positionId}...`);
+    
+    const { error } = await api.DELETE("/api/portfolio/positions/{position_id}/", {
+      params: {
+        path: { position_id: positionId },
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error) {
+      throw new Error("Failed to delete position");
+    }
+
+    console.log('✅ Position deleted successfully');
+  });
+}
+
+/**
+ * Get portfolio allocation breakdown
+ */
+export async function getPortfolioAllocation(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting portfolio allocation...');
+    
+    const { data, error } = await api.GET("/api/portfolio/positions/allocation/", {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to fetch portfolio allocation");
+    }
+
+    console.log('✅ Portfolio allocation fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get portfolio snapshots with optional date filtering
+ */
+export async function getSnapshots(): Promise<any[]> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting portfolio snapshots...');
+    
+    const { data, error } = await api.GET("/api/portfolio/snapshots/", {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to fetch snapshots");
+    }
+
+    console.log('✅ Portfolio snapshots fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Create a new portfolio snapshot
+ */
+export async function createSnapshot(request?: SnapshotCreateRequest): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Creating portfolio snapshot...', request);
+    
+    const response = await fetch(API_BASE_URL + "/api/portfolio/snapshots/create_snapshot/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+      body: JSON.stringify(request || {
+        snapshot_date: new Date().toISOString().split('T')[0],
+        force_recreate: false,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to create snapshot') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log('✅ Portfolio snapshot created successfully');
+    return data;
+  });
+}
+
+/**
+ * Get the most recent portfolio snapshot
+ */
+export async function getLatestSnapshot(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting latest portfolio snapshot...');
+    
+    const { data, error } = await api.GET("/api/portfolio/snapshots/latest/", {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to fetch latest snapshot");
+    }
+
+    console.log('✅ Latest portfolio snapshot fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get chart data for visualization
+ */
+export async function getChartData(period?: string): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log(`🔄 Getting chart data for period: ${period || 'default'}...`);
+    
+    const { data, error } = await api.GET("/api/portfolio/snapshots/chart_data/", {
+      params: {
+        query: period ? { period } : {},
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to fetch chart data");
+    }
+
+    console.log('✅ Chart data fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get performance metrics with optional period filtering
+ */
+export async function getPerformanceMetrics(): Promise<any[]> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting performance metrics...');
+    
+    const { data, error } = await api.GET("/api/portfolio/metrics/", {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to fetch performance metrics");
+    }
+
+    console.log('✅ Performance metrics fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Calculate performance metrics for a specified period
+ */
+export async function calculateMetrics(
+  metricsRequest: MetricsCalculationRequest
+): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Calculating performance metrics...', metricsRequest);
+    
+    const response = await fetch(API_BASE_URL + "/api/portfolio/metrics/calculate/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getAccessToken()}`,
+        "Origin": window.location.origin,
+      },
+      body: JSON.stringify(metricsRequest),
+    });
+
+    if (!response.ok) {
+      const error = new Error('Failed to calculate performance metrics') as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+
+    console.log('✅ Performance metrics calculated successfully');
+    return data;
+  });
+}
+
+/**
+ * Compare performance metrics across multiple periods
+ */
+export async function compareMetrics(periods?: string): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log(`🔄 Comparing metrics across periods: ${periods || 'default'}...`);
+    
+    const { data, error } = await api.GET("/api/portfolio/metrics/compare/", {
+      params: {
+        query: periods ? { periods } : {},
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to compare metrics");
+    }
+
+    console.log('✅ Metrics comparison fetched successfully');
+    return data;
+  });
+}
+
+/**
+ * Get performance metrics summary for all periods
+ */
+export async function getMetricsSummary(): Promise<any> {
+  return makeAuthenticatedRequest(async () => {
+    console.log('🔄 Getting metrics summary...');
+    
+    const { data, error } = await api.GET("/api/portfolio/metrics/summary/", {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (error || !data) {
+      throw new Error("Failed to fetch metrics summary");
+    }
+
+    console.log('✅ Metrics summary fetched successfully');
+    return data;
+  });
 }
 
 // Default export for convenience
