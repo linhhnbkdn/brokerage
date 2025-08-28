@@ -1,0 +1,55 @@
+sequenceDiagram
+    participant FE as Frontend
+    participant API as Django API
+    participant DB as Database
+    participant EXT as External Data Provider
+
+    Note over FE, EXT: Portfolio Performance System
+
+    Note over FE, API: 1. Current Portfolio Overview
+    FE->>+API: GET /api/portfolio/overview
+    Note right of FE: Authorization: Bearer access_token
+    
+    API->>API: validate_access_token()
+    API->>DB: fetch_user_holdings(user_id)
+    API->>EXT: get_current_market_prices(symbols)
+    Note right of API: Real-time price data for holdings
+    
+    API->>API: calculate_current_values()
+    Note right of API: Calculate current market value<br/>Calculate total gain/loss<br/>Calculate percentage changes
+    
+    API-->>-FE: 200 OK
+    Note left of API: total_value: 125000.50<br/>total_cost_basis: 120000.00<br/>total_gain_loss: 5000.50<br/>total_gain_loss_percent: 4.17<br/>holdings: [...]
+
+    Note over FE, API: 2. Historical Performance Data
+    FE->>+API: GET /api/portfolio/performance?period=1M
+    Note right of FE: Request 1 month performance data
+    
+    API->>DB: fetch_portfolio_snapshots(user_id, period)
+    Note right of API: Get daily portfolio snapshots<br/>Calculate performance metrics
+    
+    API->>API: calculate_performance_metrics()
+    Note right of API: Calculate returns, volatility<br/>Benchmark comparisons
+    
+    API-->>-FE: 200 OK
+    Note left of API: period: 1M<br/>snapshots: [...]<br/>metrics: [...]
+
+    Note over FE, API: 3. Individual Asset Performance
+    FE->>+API: GET /api/portfolio/holdings/:id/performance
+    
+    API->>DB: fetch_position_history(position_id)
+    API->>EXT: get_price_history(symbol, period)
+    
+    API->>API: calculate_position_performance()
+    Note right of API: Calculate individual asset returns<br/>Compare to market/benchmark
+    
+    API-->>-FE: 200 OK
+    Note left of API: Position performance data
+
+    rect rgb(240, 248, 255)
+        Note over API, DB: Core Models & Data Structure<br/>• Position (holdings)<br/>• PortfolioSnapshot (daily values)<br/>• Transaction (buy/sell history)<br/>• PerformanceMetrics (calculated stats)<br/>• UserBalance (cash positions)
+    end
+
+    rect rgb(248, 255, 240)
+        Note over API: Performance Calculations<br/>• Total Return = (Current Value - Cost Basis) / Cost Basis<br/>• Time-Weighted Return (daily snapshots)<br/>• Volatility (standard deviation of returns)<br/>• Sharpe Ratio (risk-adjusted returns)<br/>• Alpha/Beta vs S&P 500 benchmark
+    end
